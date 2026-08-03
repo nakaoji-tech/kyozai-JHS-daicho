@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>教材受注台帳（中学校・原本）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F1EEE2;
+  --paper-dark:#E7E1CE;
+  --ink:#26344B;
+  --ink-soft:#5B6473;
+  --rule:#B9AE8C;
+  --rule-soft:#D9D2B8;
+  --hanko:#B3312C;
+  --hanko-soft:#E3C7C2;
+  --forest:#3F6B4A;
+  --card:#FBF9F2;
+  --shadow: 0 2px 10px rgba(38,52,75,0.12);
+  --tab-1:#6B8F71;
+  --tab-2:#52708A;
+  --tab-3:#B8863B;
+  --tab-4:#7B5470;
+  --tab-5:#3F7D7A;
+  --tab-6:#B4623C;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;overscroll-behavior:none;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  font-size:15px;
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+  height:100dvh;
+  overflow:hidden;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(185,174,140,0.16) 28px);
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+}
+
+/* ---------- HEADER ---------- */
+#topbar{
+  flex:0 0 auto;
+  padding:10px 70px 10px 16px;
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  border-bottom:2px solid var(--ink);
+  background:var(--paper);
+  position:relative;
+  z-index:5;
+}
+#topbar .titles{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+#schoolName{
+  font-family:'Shippori Mincho',serif;
+  font-weight:700;
+  font-size:22px;
+  letter-spacing:0.02em;
+  border:none;
+  border-bottom:1.5px dashed transparent;
+  background:transparent;
+  color:var(--ink);
+  padding:2px 3px;
+  min-width:64px;
+  max-width:44vw;
+  font-family:'Shippori Mincho',serif;
+}
+#schoolName:focus{outline:none; border-bottom-color:var(--hanko); background:rgba(255,255,255,0.55);}
+#schoolName::placeholder{color:var(--ink-soft); opacity:0.6;}
+#pageKind{
+  font-family:'Shippori Mincho',serif;
+  font-size:17px;
+  color:var(--ink-soft);
+}
+#contactInfo{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:2px;
+}
+.contact-input{
+  font-size:11px;
+  color:var(--ink-soft);
+  text-align:right;
+  line-height:1.4;
+  border:none;
+  border-bottom:1px dashed transparent;
+  background:transparent;
+  width:118px;
+  padding:1px 2px;
+  font-family:inherit;
+}
+.contact-input:focus{outline:none; border-bottom-color:var(--hanko); background:rgba(255,255,255,0.5);}
+.contact-input::placeholder{color:#B5AD98;}
+
+/* ---------- TAB RAIL (signature element) ---------- */
+#tabRail{
+  position:fixed;
+  top:0; right:0; bottom:0;
+  width:64px;
+  z-index:20;
+  overflow-y:auto;
+  overflow-x:visible;
+  scrollbar-width:none;
+  display:flex;
+  flex-direction:column;
+  padding-top:70px;
+  pointer-events:none;
+}
+#tabRail::-webkit-scrollbar{display:none;}
+.tab{
+  pointer-events:auto;
+  position:relative;
+  margin:1px 0 1px auto;
+  padding:7px 5px;
+  width:56px;
+  min-height:34px;
+  border-radius:6px 0 0 6px;
+  color:#fff;
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  font-weight:700;
+  font-size:11px;
+  line-height:1.3;
+  letter-spacing:0.01em;
+  text-align:center;
+  white-space:normal;
+  word-break:keep-all;
+  overflow-wrap:anywhere;
+  box-shadow:-1px 2px 4px rgba(0,0,0,0.18);
+  transition:width 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.tab.active{
+  width:70px;
+  transform:translateX(-6px);
+  box-shadow:-2px 3px 8px rgba(0,0,0,0.28);
+  outline:2px solid var(--paper);
+  outline-offset:-4px;
+}
+.tab:focus-visible{outline:3px solid var(--hanko);}
+
+.tab-add{
+  pointer-events:auto;
+  margin:8px 0 16px auto;
+  width:56px;height:40px;
+  border-radius:6px 0 0 6px;
+  border:1.5px dashed var(--rule);
+  background:var(--paper-dark);
+  color:var(--ink-soft);
+  font-size:20px;
+  font-weight:700;
+  font-family:inherit;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  box-shadow:-1px 2px 4px rgba(0,0,0,0.1);
+}
+.tab-add:active{background:var(--rule-soft);}
+
+/* ---------- MAIN SCROLL AREA ---------- */
+#viewport{
+  flex:1 1 auto;
+  overflow:hidden;
+  position:relative;
+  margin-right:64px;
+}
+#pageTrack{
+  height:100%;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding:14px 14px 90px 16px;
+}
+.fade-enter{animation:pageFade 0.22s ease;}
+@keyframes pageFade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ---------- SECTION CARD ---------- */
+.section{
+  background:var(--card);
+  border:1px solid var(--rule-soft);
+  border-radius:10px;
+  padding:12px 14px 14px;
+  margin-bottom:14px;
+  box-shadow:var(--shadow);
+}
+.section h2{
+  font-family:'Shippori Mincho',serif;
+  font-size:15px;
+  margin:0 0 10px 0;
+  padding-bottom:6px;
+  border-bottom:1.5px solid var(--rule);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--ink);
+}
+.section h2 .eyebrow{
+  font-size:10px;
+  font-weight:700;
+  color:#fff;
+  background:var(--ink);
+  padding:2px 7px;
+  border-radius:3px;
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  letter-spacing:0.05em;
+}
+.subhead{
+  font-size:12px;
+  color:var(--hanko);
+  font-weight:700;
+  margin:14px 0 6px;
+  padding-left:2px;
+  border-left:3px solid var(--hanko);
+  padding-left:6px;
+}
+
+/* ---------- SUBJECT ITEM ---------- */
+.item{
+  padding:9px 2px;
+  border-bottom:1px dashed var(--rule-soft);
+}
+.item:last-child{border-bottom:none;}
+.item-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:8px;
+  margin-bottom:4px;
+}
+.item-name{font-weight:700;font-size:14.5px;}
+.item-name.empty{color:var(--ink-soft);font-weight:500;font-style:italic;}
+.item-price{font-size:12.5px;color:var(--ink-soft);white-space:nowrap;font-variant-numeric:tabular-nums;}
+.chiprow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:3px 0;}
+.yearlabel-input{
+  font-size:10.5px;color:#fff;background:var(--ink-soft);
+  width:30px;flex:0 0 auto;font-weight:700;
+  border:none;border-radius:4px;
+  text-align:center;padding:6px 2px;
+  font-family:'Zen Kaku Gothic New',sans-serif;
+}
+.yearlabel-input:focus{outline:2px solid var(--hanko);}
+.chip{
+  position:relative;
+  padding:4px 11px;
+  font-size:13.5px;
+  border-radius:5px;
+  background:transparent;
+  border:1px solid transparent;
+  cursor:pointer;
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  color:var(--ink);
+  user-select:none;
+  min-height:30px;
+  display:inline-flex;
+  align-items:center;
+}
+.chip:active{background:rgba(38,52,75,0.06);}
+.chip .ring{
+  position:absolute;
+  inset:-3px -7px;
+  border:2.5px solid var(--hanko);
+  border-radius:50% 44% 56% 48% / 58% 46% 62% 42%;
+  transform:rotate(-4deg);
+  opacity:0;
+  pointer-events:none;
+}
+.chip.on{color:var(--hanko);font-weight:700;}
+.chip.on .ring{opacity:1;}
+.item-fields{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
+.field-mini{display:flex;align-items:center;gap:4px;}
+.field-mini label{font-size:10.5px;color:var(--ink-soft);}
+.field-mini input{
+  border:1px solid var(--rule);
+  border-radius:5px;
+  background:#fff;
+  padding:5px 6px;
+  font-size:12.5px;
+  font-family:inherit;
+  color:var(--ink);
+  width:78px;
+}
+.field-mini input[type=number]{width:54px;}
+.datebox{position:relative; display:inline-flex; align-items:center;}
+.datebox .date-native{
+  position:absolute; inset:0; opacity:0; width:100%; height:100%;
+  cursor:pointer; z-index:2; font-size:16px; margin:0; padding:0; border:none;
+}
+.datebox .date-label{
+  pointer-events:none;
+  border:1px solid var(--rule);
+  border-radius:5px;
+  background:#fff;
+  padding:5px 10px;
+  font-size:12.5px;
+  color:var(--ink);
+  min-width:46px;
+  text-align:center;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.datebox .date-label.empty{color:#B5AD98;}
+
+/* ---------- CLASS TABLE ---------- */
+.classgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;}
+.classcell{
+  background:#fff;
+  border:1px solid var(--rule-soft);
+  border-radius:7px;
+  padding:6px 8px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:4px;
+}
+.classcell .clabel{font-size:11px;color:var(--ink-soft);font-weight:700;}
+.classcell input{
+  width:40px;
+  border:none;
+  border-bottom:1.5px solid var(--rule);
+  background:transparent;
+  text-align:center;
+  font-size:15px;
+  font-weight:700;
+  color:var(--ink);
+  padding:2px 0;
+}
+.classtotal{margin-top:8px;font-size:12px;color:var(--ink-soft);text-align:right;}
+.classtotal b{color:var(--ink);font-size:14px;}
+
+/* ---------- CHECK ROW ---------- */
+.checkrow{display:flex;gap:10px;flex-wrap:wrap;}
+.checkbtn{
+  flex:1 1 0;
+  min-width:88px;
+  text-align:center;
+  padding:12px 6px;
+  border-radius:8px;
+  border:1.5px solid var(--rule);
+  background:#fff;
+  font-weight:700;
+  font-size:13px;
+  cursor:pointer;
+  color:var(--ink-soft);
+  transition:background 0.12s, color 0.12s, border-color 0.12s;
+}
+.checkbtn.on{background:var(--forest);border-color:var(--forest);color:#fff;}
+
+/* ---------- DYNAMIC LIST (return books / memo) ---------- */
+.dyn-row{
+  background:#fff;
+  border:1px solid var(--rule-soft);
+  border-radius:8px;
+  padding:9px 10px;
+  margin-bottom:8px;
+  position:relative;
+}
+.dyn-row .grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
+.dyn-row .visit-cols{display:grid;grid-template-columns:minmax(76px,88px) minmax(64px,84px) 1fr;gap:6px;align-items:start;}
+.dyn-row .visit-cols textarea{min-height:34px;}
+.dyn-row input, .dyn-row textarea{
+  width:100%;
+  border:none;
+  border-bottom:1.3px solid var(--rule-soft);
+  background:transparent;
+  font-family:inherit;
+  font-size:13px;
+  padding:4px 2px;
+  color:var(--ink);
+}
+.dyn-row textarea{resize:vertical;min-height:36px;border-bottom:none;background:#FAF8EF;border-radius:5px;padding:6px 8px;border:1px solid var(--rule-soft);}
+.dyn-row input::placeholder,.dyn-row textarea::placeholder{color:#B5AD98;}
+.delrow{
+  position:absolute; top:6px; right:6px;
+  width:22px;height:22px;border-radius:50%;
+  background:var(--paper-dark); color:var(--ink-soft);
+  border:none; font-size:13px; line-height:1; cursor:pointer;
+}
+.addbtn{
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:1.5px dashed var(--rule);
+  background:transparent;
+  color:var(--ink-soft);
+  font-weight:700;
+  font-size:13px;
+  cursor:pointer;
+  font-family:inherit;
+}
+.addbtn:active{background:var(--paper-dark);}
+.empty-hint{font-size:12px;color:var(--ink-soft);padding:6px 2px 10px;}
+
+/* ---------- MEMO PAGE ---------- */
+.memopage-hero{
+  font-family:'Shippori Mincho',serif;
+  font-size:20px;
+  margin:4px 0 14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.memopage-hero .stamp{
+  display:inline-block;
+  border:2.5px solid var(--hanko);
+  color:var(--hanko);
+  border-radius:50% 44% 56% 48% / 58% 46% 62% 42%;
+  transform:rotate(-4deg);
+  padding:3px 10px;
+  font-size:13px;
+  font-weight:700;
+}
+
+/* ---------- BOTTOM NAV ---------- */
+#bottomnav{
+  position:fixed;
+  left:0; right:64px; bottom:0;
+  padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  background:linear-gradient(0deg, var(--paper) 60%, rgba(241,238,226,0));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  z-index:15;
+  pointer-events:none;
+}
+#bottomnav .navbtn{
+  pointer-events:auto;
+  background:var(--ink);
+  color:#fff;
+  border:none;
+  width:38px;height:38px;
+  border-radius:50%;
+  font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow);
+  flex:0 0 auto;
+}
+#dots{
+  pointer-events:auto;
+  display:flex;
+  gap:5px;
+  background:var(--card);
+  border:1px solid var(--rule-soft);
+  border-radius:20px;
+  padding:6px 10px;
+  box-shadow:var(--shadow);
+  overflow-x:auto;
+  max-width:calc(100vw - 180px);
+}
+.dot{
+  flex:0 0 auto;
+  width:26px;height:26px;
+  border-radius:50%;
+  border:1.5px solid var(--rule);
+  background:#fff;
+  font-size:11px;
+  font-weight:700;
+  color:var(--ink-soft);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+}
+.dot.active{background:var(--hanko);border-color:var(--hanko);color:#fff;}
+.dot.memo{font-size:13px;}
+
+/* swipe hint arrows */
+.edgehint{
+  position:absolute; top:50%; transform:translateY(-50%);
+  color:var(--rule); font-size:22px; opacity:0.5; pointer-events:none;
+}
+.edgehint.left{left:2px;} .edgehint.right{right:2px;}
+
+/* ---------- SCHOOL SEARCH ---------- */
+#searchBtn{
+  flex:0 0 auto;
+  width:34px;height:34px;
+  border-radius:50%;
+  border:1.5px solid var(--rule);
+  background:var(--card);
+  color:var(--ink);
+  font-size:15px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  margin-left:8px;
+}
+#deleteSchoolBtn{
+  flex:0 0 auto;
+  width:34px;height:34px;
+  border-radius:50%;
+  border:1.5px solid var(--hanko-soft);
+  background:var(--card);
+  color:var(--hanko);
+  font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  margin-left:6px;
+}
+#deleteSchoolBtn:active{background:var(--hanko-soft);}
+#searchOverlay{
+  position:fixed; inset:0;
+  background:rgba(38,52,75,0.34);
+  z-index:40;
+  display:none;
+  padding:12vh 16px 0;
+}
+#searchOverlay.open{display:block;}
+#searchPanel{
+  background:var(--paper);
+  border-radius:12px;
+  max-width:440px;
+  margin:0 auto;
+  max-height:70vh;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 8px 30px rgba(0,0,0,0.3);
+  overflow:hidden;
+  border:1px solid var(--rule-soft);
+}
+#searchInputRow{
+  display:flex; align-items:center; gap:8px;
+  padding:12px;
+  border-bottom:1.5px solid var(--ink);
+}
+#searchInputRow input{
+  flex:1;
+  border:1px solid var(--rule);
+  border-radius:8px;
+  padding:9px 10px;
+  font-size:15px;
+  font-family:inherit;
+  background:#fff;
+  color:var(--ink);
+}
+#searchCloseBtn{
+  flex:0 0 auto;
+  background:none;border:none;
+  font-size:20px;color:var(--ink-soft);
+  cursor:pointer; padding:2px 4px;
+}
+#searchResults{overflow-y:auto;}
+.searchResultRow{
+  display:flex; align-items:center; gap:10px;
+  padding:11px 14px;
+  border-bottom:1px dashed var(--rule-soft);
+  cursor:pointer;
+}
+.searchResultRow:active{background:var(--paper-dark);}
+.searchResultRow .swatch{
+  width:12px;height:12px;border-radius:50%;flex:0 0 auto;
+}
+.searchResultRow .srname{font-weight:700;font-size:14px;flex:1;}
+.searchResultRow .srbadge{
+  font-size:10px;color:var(--forest);font-weight:700;
+  border:1px solid var(--forest);border-radius:4px;padding:1px 5px;
+}
+.searchEmpty{padding:16px;text-align:center;color:var(--ink-soft);font-size:13px;}
+
+/* ---------- CONFIRM MODAL ---------- */
+#confirmOverlay{
+  position:fixed; inset:0;
+  background:rgba(38,52,75,0.4);
+  z-index:60;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:0 24px;
+}
+#confirmOverlay.open{display:flex;}
+#confirmPanel{
+  background:var(--paper);
+  border-radius:14px;
+  max-width:340px;
+  width:100%;
+  padding:20px 18px 16px;
+  box-shadow:0 10px 34px rgba(0,0,0,0.32);
+  border:1px solid var(--rule-soft);
+}
+#confirmMessage{
+  font-size:14px;
+  line-height:1.6;
+  color:var(--ink);
+  white-space:pre-wrap;
+  margin-bottom:18px;
+}
+#confirmButtons{
+  display:flex;
+  gap:8px;
+}
+#confirmButtons button{
+  flex:1;
+  padding:11px 8px;
+  border-radius:8px;
+  font-size:13.5px;
+  font-weight:700;
+  font-family:inherit;
+  cursor:pointer;
+  border:1.5px solid var(--rule);
+  background:#fff;
+  color:var(--ink-soft);
+}
+#confirmOkBtn{
+  border-color:var(--hanko);
+  background:var(--hanko);
+  color:#fff;
+}
+#confirmOkBtn:active{opacity:0.85;}
+#confirmCancelBtn:active{background:var(--paper-dark);}
+
+/* ---------- TAB DATA BADGE ---------- */
+.tab{position:relative;}
+.tab .tabdot{
+  position:absolute; top:4px; left:5px;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--forest);
+  border:1.2px solid rgba(255,255,255,0.85);
+  display:none;
+}
+.tab.has-data .tabdot{display:block;}
+
+/* ---------- DOT COMPLETION BADGE ---------- */
+.dot{position:relative;}
+.dot.has-data::after{
+  content:'';
+  position:absolute; bottom:-2px; right:-2px;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--forest);
+  border:1.5px solid var(--card);
+}
+
+/* ---------- SAVE TOAST ---------- */
+#saveToast{
+  position:fixed;
+  left:50%; bottom:64px;
+  transform:translate(-50%, 14px);
+  background:var(--ink);
+  color:#fff;
+  padding:8px 16px;
+  border-radius:20px;
+  font-size:12.5px;
+  font-weight:700;
+  box-shadow:0 4px 14px rgba(0,0,0,0.25);
+  z-index:50;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.2s ease, transform 0.2s ease;
+  display:flex; align-items:center; gap:8px;
+  white-space:nowrap;
+}
+#saveToast.show{opacity:1; transform:translate(-50%, 0);}
+#saveToast .undoLink{
+  color:#F1EEE2; text-decoration:underline; font-weight:700;
+  cursor:pointer; pointer-events:auto;
+  padding:2px 2px;
+}
+#saveToast .tick{color:#8FCB9A;font-size:14px;}
+
+/* ---------- STEPPER ---------- */
+.stepper{
+  display:flex; align-items:center; gap:0;
+  border:1px solid var(--rule);
+  border-radius:6px;
+  overflow:hidden;
+  background:#fff;
+}
+.stepper button{
+  width:26px;height:30px;
+  border:none;
+  background:var(--paper-dark);
+  color:var(--ink);
+  font-size:15px;
+  font-weight:700;
+  font-family:inherit;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex:0 0 auto;
+}
+.stepper button:active{background:var(--rule-soft);}
+.stepper input{
+  width:38px !important;
+  border:none !important;
+  text-align:center;
+  padding:5px 0 !important;
+  -moz-appearance:textfield;
+}
+.stepper input::-webkit-outer-spin-button,
+.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.classcell .stepper input{width:34px !important;font-size:14px;}
+
+
+/* ---------- LEDGER GRID (Excelレイアウト準拠) ---------- */
+.lgrid{
+  display:grid;
+  grid-template-columns:30px repeat(4, minmax(0,1fr)) 58px 32px;
+  gap:4px;
+  align-items:center;
+}
+.lheader{
+  margin:0 0 6px;
+  position:sticky;
+  top:0;
+  z-index:6;
+  background:var(--card);
+  padding:6px 0 6px;
+  box-shadow:0 3px 6px -2px rgba(38,52,75,0.14);
+}
+.lheader .hcell{
+  font-size:10px;color:var(--ink-soft);font-weight:700;text-align:center;
+}
+.lheader .yearcell{display:flex;flex-direction:column;gap:2px;}
+.lheader .yearcell .yearlabel-input{width:100%;}
+.yearcell.hl, .qtypair.hl{
+  background:var(--rule-soft);
+  border-radius:6px;
+  padding:3px 3px;
+}
+.yearcell.hl .yearlabel-input{background:var(--hanko);color:#fff;}
+.lheader .subhcells{display:flex;gap:2px;}
+.lheader .subhcells span{
+  font-size:8.5px;color:var(--ink-soft);text-align:center;font-weight:700;
+}
+.lheader .subhcells span.stu{flex:2;}
+.lheader .subhcells span.tea{flex:1;}
+.lrow{padding:3px 0;}
+.glabel{
+  font-size:11px;font-weight:700;color:var(--ink-soft);text-align:center;
+}
+.qtypair{display:flex;gap:2px;}
+.qtypair.hl{gap:2px;}
+.qtypair.hl .qty{color:#1E4FBF;font-weight:700;}
+.qty{
+  min-width:0;
+  border:1px solid var(--rule);
+  border-radius:5px;
+  background:#fff;
+  text-align:center;
+  font-size:13.5px;
+  font-family:inherit;
+  color:var(--ink);
+  padding:6px 1px;
+  -moz-appearance:textfield;
+}
+.qty.stu{flex:2;}
+.qty.tea{flex:1;background:#FAF8EF;}
+.qty::-webkit-outer-spin-button,.qty::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.qty:focus{outline:2px solid var(--hanko);border-color:var(--hanko);}
+.price-input{
+  border:1px solid var(--rule);
+  border-radius:5px;
+  background:#fff;
+  font-size:12px;
+  font-family:inherit;
+  color:var(--ink);
+  padding:3px 5px;
+  width:72px;
+  text-align:right;
+}
+.price-input::placeholder{color:#B5AD98;}
+.pubrow{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin:2px 0 2px;}
+.pubrow .chip{padding:3px 9px;font-size:12.5px;min-height:26px;}
+.shunin{
+  width:100%;
+  border:none;
+  border-bottom:1.3px solid var(--rule-soft);
+  background:transparent;
+  font-size:12px;
+  font-family:inherit;
+  color:var(--ink);
+  padding:5px 2px;
+}
+.shunin::placeholder{color:#C9C1A8;}
+.kbtn{
+  width:30px;height:30px;
+  border-radius:50% 44% 56% 48% / 58% 46% 62% 42%;
+  border:1.8px solid var(--rule);
+  background:#fff;
+  color:var(--ink-soft);
+  font-size:11.5px;
+  font-weight:700;
+  font-family:inherit;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transform:rotate(-4deg);
+}
+.kbtn.on{background:var(--hanko);border-color:var(--hanko);color:#fff;}
+.enrolgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+
+/* ---------- ARCHIVE (年度アーカイブ) ---------- */
+#archiveBanner{
+  display:none;
+  background:var(--hanko);
+  color:#fff;
+  font-size:12px;
+  font-weight:700;
+  text-align:center;
+  padding:7px 8px;
+  letter-spacing:0.02em;
+}
+body.archive-mode #archiveBanner{display:block;}
+#archiveExportBtn{
+  display:block;
+  width:calc(100% - 24px);
+  margin:10px 12px 12px;
+  padding:11px;
+  border-radius:8px;
+  border:1.5px dashed var(--rule);
+  background:var(--paper-dark);
+  color:var(--ink);
+  font-weight:700;
+  font-size:13px;
+  cursor:pointer;
+  font-family:inherit;
+}
+#archiveOverlay{
+  position:fixed; inset:0;
+  background:rgba(38,52,75,0.4);
+  z-index:60;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:0 24px;
+}
+#archiveOverlay.open{display:flex;}
+#archivePanel{
+  background:var(--paper);
+  border-radius:14px;
+  max-width:340px;
+  width:100%;
+  padding:20px 18px 16px;
+  box-shadow:0 10px 34px rgba(0,0,0,0.32);
+  border:1px solid var(--rule-soft);
+}
+#archiveMessage{font-size:14px;line-height:1.6;color:var(--ink);margin-bottom:12px;}
+#archiveYearInput{
+  width:100%;
+  border:1px solid var(--rule);
+  border-radius:8px;
+  padding:9px 10px;
+  font-size:14px;
+  font-family:inherit;
+  background:#fff;
+  color:var(--ink);
+  margin-bottom:16px;
+}
+#archiveButtons{display:flex;gap:8px;}
+#archiveButtons button{
+  flex:1;
+  padding:11px 8px;
+  border-radius:8px;
+  font-size:13.5px;
+  font-weight:700;
+  font-family:inherit;
+  cursor:pointer;
+  border:1.5px solid var(--rule);
+  background:#fff;
+  color:var(--ink-soft);
+}
+#archiveOkBtn{border-color:var(--forest);background:var(--forest);color:#fff;}
+#archiveOkBtn:active{opacity:0.85;}
+#archiveCancelBtn:active{background:var(--paper-dark);}
+
+/* アーカイブ(閲覧専用)モード時のロックダウン表示 */
+body.archive-mode input:disabled,
+body.archive-mode textarea:disabled{
+  background:#EDE9D8;
+  color:var(--ink-soft);
+  opacity:1;
+  -webkit-text-fill-color:var(--ink-soft);
+}
+body.archive-mode .kbtn:disabled{opacity:0.5;}
+body.archive-mode .chip{pointer-events:none;}
+body.archive-mode .stepbtn,
+body.archive-mode .addbtn,
+body.archive-mode .delrow,
+body.archive-mode #deleteSchoolBtn,
+body.archive-mode .tab-add,
+body.archive-mode #archiveExportBtn{display:none !important;}
+
+::-webkit-scrollbar{width:0;height:0;}
+</style>
+</head>
+<body>
+
+<div id="archiveBanner"></div>
+<div id="topbar">
+  <div class="titles">
+    <input id="schoolName" type="text" placeholder="学校名" autocomplete="off">
+    <span id="pageKind">―</span>
+  </div>
+  <div style="display:flex;align-items:center;">
+    <div id="contactInfo">
+      <input id="telInput" class="contact-input" placeholder="TEL 未入力" autocomplete="off">
+      <input id="faxInput" class="contact-input" placeholder="FAX 未入力" autocomplete="off">
+    </div>
+    <button id="searchBtn" aria-label="学校を検索">🔍</button>
+    <button id="deleteSchoolBtn" aria-label="この学校を削除">🗑</button>
+  </div>
+</div>
+
+<div id="searchOverlay">
+  <div id="searchPanel">
+    <div id="searchInputRow">
+      <input type="text" id="searchInput" placeholder="学校名で検索..." autocomplete="off">
+      <button id="searchCloseBtn" aria-label="閉じる">×</button>
+    </div>
+    <div id="searchResults"></div>
+    <button id="archiveExportBtn" type="button">📦 年度アーカイブを書き出す</button>
+  </div>
+</div>
+
+<div id="archiveOverlay">
+  <div id="archivePanel">
+    <div id="archiveMessage">書き出す年度名を入力してください（例：令和8年度）</div>
+    <input type="text" id="archiveYearInput" placeholder="令和8年度" autocomplete="off">
+    <div id="archiveButtons">
+      <button id="archiveCancelBtn" type="button">キャンセル</button>
+      <button id="archiveOkBtn" type="button">書き出す</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirmOverlay">
+  <div id="confirmPanel">
+    <div id="confirmMessage"></div>
+    <div id="confirmButtons">
+      <button id="confirmCancelBtn" type="button">キャンセル</button>
+      <button id="confirmOkBtn" type="button">削除する</button>
+    </div>
+  </div>
+</div>
+
+<div id="tabRail"></div>
+
+<div id="saveToast"></div>
+
+<div id="viewport">
+  <div id="pageTrack"></div>
+</div>
+
+<div id="bottomnav">
+  <button class="navbtn" id="prevBtn" aria-label="前へ">‹</button>
+  <div id="dots"></div>
+  <button class="navbtn" id="nextBtn" aria-label="次へ">›</button>
+</div>
+
+<script id="data-schools" type="application/json">[]</script>
+<script id="data-archive" type="application/json"></script>
+<script id="data-items" type="application/json">[{"title": "教材", "items": [{"name": "理科学習ノート", "price": 580, "grades": [1, 2, 3], "pubs": ["東書"]}, {"name": "保健学習ノート", "price": 500, "grades": [1, 2, 3], "pubs": ["学研", "東書"]}, {"name": "体育実技ノート", "price": 500, "grades": [1, 2, 3], "pubs": []}, {"name": "地理学習ノートⅠ", "price": 590, "grades": [1], "pubs": []}, {"name": "地理学習ノートⅡ", "price": 590, "grades": [2], "pubs": []}, {"name": "歴史学習ノートⅠ", "price": 590, "grades": [1], "pubs": []}, {"name": "歴史学習ノートⅡ", "price": 590, "grades": [2], "pubs": []}, {"name": "歴史学習ノートⅢ", "price": 590, "grades": [3], "pubs": []}, {"name": "ニュートンJr.", "price": 580, "grades": [1, 2, 3], "pubs": ["東書"]}, {"name": "新版 英語学習ノート", "price": 670, "grades": [1, 2, 3], "pubs": ["開隆堂"]}]}, {"title": "技家", "items": [{"name": "家庭分野パート1", "price": 510, "grades": [0], "pubs": ["東書", "教図"]}, {"name": "家庭分野パート2", "price": 510, "grades": [0], "pubs": ["東書", "教図"]}, {"name": "家庭分野1", "price": 480, "grades": [0], "pubs": ["東書"]}, {"name": "解答シール", "price": 60, "grades": [0], "pubs": ["東書"]}, {"name": "家庭分野2", "price": 480, "grades": [0], "pubs": ["東書"]}, {"name": "家庭分野3", "price": 320, "grades": [0], "pubs": ["東書"]}, {"name": "材料と加工", "price": 370, "grades": [0], "pubs": ["東書", "開隆堂"]}, {"name": "エネルギー変換・生物育成", "price": 410, "grades": [0], "pubs": ["東書", "開隆堂"]}, {"name": "情報", "price": 370, "grades": [0], "pubs": ["東書", "開隆堂"]}]}, {"title": "その他", "items": [{"name": "道徳ノート", "price": 160, "grades": [1, 2, 3], "pubs": []}, {"name": "身分証明書", "price": null, "grades": [0], "pubs": []}, {"name": "パウチフィルム", "price": 12, "grades": [0], "pubs": []}]}]</script>
+<script>
+(function(){
+'use strict';
+
+const SCHOOLS = JSON.parse(document.getElementById('data-schools').textContent);
+const SECTIONS = JSON.parse(document.getElementById('data-items').textContent);
+const SUBJECTS = ['理科','体育','社会','数学','英語','家庭科','技術','その他'];
+const SUBJECT_DOT = {'理科':'理','体育':'体','社会':'社','数学':'数','英語':'英','家庭科':'家','技術':'技','その他':'他'};
+
+// ---- アーカイブ(閲覧専用)判定 ----
+const ARCHIVE_EL = document.getElementById('data-archive');
+const ARCHIVE_DATA = (ARCHIVE_EL && ARCHIVE_EL.textContent.trim()) ? JSON.parse(ARCHIVE_EL.textContent) : null;
+const IS_ARCHIVE = !!ARCHIVE_DATA;
+if(IS_ARCHIVE) document.body.classList.add('archive-mode');
+
+const TAB_COLORS = ['var(--tab-1)','var(--tab-2)','var(--tab-3)','var(--tab-4)','var(--tab-5)','var(--tab-6)'];
+
+// ---- storage helpers ----
+const memFallback = {};
+let storageOK = !!(window.storage && window.storage.get && window.storage.set);
+
+async function storeGet(key){
+  if(IS_ARCHIVE){
+    if(key === 'schools') return ARCHIVE_DATA.schools || [];
+    if(key === 'yearLabels4') return ARCHIVE_DATA.yearLabels4 || null;
+    if(key === 'lastPage') return null;
+    const recs = ARCHIVE_DATA.records || {};
+    return Object.prototype.hasOwnProperty.call(recs, key) ? recs[key] : null;
+  }
+  if(storageOK){
+    try{
+      const r = await window.storage.get(key, false);
+      return r ? JSON.parse(r.value) : null;
+    }catch(e){ return null; }
+  }
+  return memFallback[key] || null;
+}
+async function storeSet(key, value){
+  if(IS_ARCHIVE) return; // 閲覧専用アーカイブでは保存しない
+  if(storageOK){
+    try{
+      await window.storage.set(key, JSON.stringify(value), false);
+      if(key.indexOf('rec:')===0 || key.indexOf('memo:')===0) RECORDED_KEYS.add(key);
+      return;
+    }
+    catch(e){ /* fall through */ }
+  }
+  memFallback[key] = value;
+  if(key.indexOf('rec:')===0 || key.indexOf('memo:')===0) RECORDED_KEYS.add(key);
+}
+async function storeDelete(key){
+  if(IS_ARCHIVE) return;
+  if(storageOK){
+    try{ await window.storage.delete(key, false); }
+    catch(e){ /* ignore */ }
+  } else {
+    delete memFallback[key];
+  }
+  RECORDED_KEYS.delete(key);
+}
+
+// ---- pages: 1校 = 台帳 + メモ ----
+const PAGES = [];
+const PAGES_PER_SCHOOL = 1 + SUBJECTS.length;
+function pagesForSchool(si){
+  return [{schoolIdx:si, kind:'ledger'}, ...SUBJECTS.map(sub=>({schoolIdx:si, kind:'memo', subject:sub}))];
+}
+function rebuildPages(){
+  PAGES.length = 0;
+  SCHOOLS.forEach((s, si)=>{ PAGES.push(...pagesForSchool(si)); });
+}
+rebuildPages();
+
+let currentIndex = 0;
+let currentData = null;
+let saveTimer = null;
+let YEAR_LABELS = ['R5','R6','R7','R8'];
+
+const pageTrack = document.getElementById('pageTrack');
+const schoolNameEl = document.getElementById('schoolName');
+const pageKindEl = document.getElementById('pageKind');
+const telInputEl = document.getElementById('telInput');
+const faxInputEl = document.getElementById('faxInput');
+const tabRail = document.getElementById('tabRail');
+const dotsEl = document.getElementById('dots');
+
+// ---------------- RECORDED-DATA TRACKING ----------------
+const RECORDED_KEYS = new Set();
+async function loadRecordedKeys(){
+  if(IS_ARCHIVE){
+    Object.keys(ARCHIVE_DATA.records || {}).forEach(k=> RECORDED_KEYS.add(k));
+    return;
+  }
+  if(storageOK){
+    try{
+      const recRes = await window.storage.list('rec:', false);
+      const memoRes = await window.storage.list('memo:', false);
+      (recRes && recRes.keys || []).forEach(k=> RECORDED_KEYS.add(k));
+      (memoRes && memoRes.keys || []).forEach(k=> RECORDED_KEYS.add(k));
+    }catch(e){ /* ignore */ }
+  } else {
+    Object.keys(memFallback).forEach(k=>{
+      if(k.indexOf('rec:')===0 || k.indexOf('memo:')===0) RECORDED_KEYS.add(k);
+    });
+  }
+}
+function schoolHasMemo(s){
+  for(const sub of SUBJECTS){ if(RECORDED_KEYS.has(`memo:${s.id}:${sub}`)) return true; }
+  return false;
+}
+function schoolHasData(s){
+  return RECORDED_KEYS.has(`rec:${s.id}:1`) || schoolHasMemo(s);
+}
+function refreshBadges(){
+  updateTabRail();
+  if(PAGES.length === 0) return;
+  const s = SCHOOLS[PAGES[currentIndex].schoolIdx];
+  [...dotsEl.children].forEach((el,i)=>{
+    const has = i===0 ? RECORDED_KEYS.has(`rec:${s.id}:1`) : RECORDED_KEYS.has(`memo:${s.id}:${SUBJECTS[i-1]}`);
+    el.classList.toggle('has-data', has);
+  });
+}
+
+// ---------------- TAB RAIL ----------------
+function buildTabRail(){
+  tabRail.innerHTML = '';
+  SCHOOLS.forEach((s, si)=>{
+    const btn = document.createElement('button');
+    btn.className = 'tab';
+    btn.style.background = s.color || TAB_COLORS[si % TAB_COLORS.length];
+    btn.style.color = s.textColor || '#fff';
+    btn.dataset.si = si;
+    const dot = document.createElement('span');
+    dot.className = 'tabdot';
+    btn.appendChild(dot);
+    btn.appendChild(document.createTextNode(s.tab));
+    btn.addEventListener('click', ()=>{
+      goTo(si * PAGES_PER_SCHOOL, true);
+    });
+    tabRail.appendChild(btn);
+  });
+  const addBtn = document.createElement('button');
+  addBtn.className = 'tab-add';
+  addBtn.textContent = '＋';
+  addBtn.setAttribute('aria-label', '学校を追加');
+  addBtn.addEventListener('click', addSchool);
+  tabRail.appendChild(addBtn);
+}
+
+function updateTabRail(){
+  if(PAGES.length === 0) return;
+  const activeSi = PAGES[currentIndex].schoolIdx;
+  [...tabRail.children].forEach((el)=>{
+    if(el.classList.contains('tab-add')) return;
+    const si = Number(el.dataset.si);
+    const on = si === activeSi;
+    el.classList.toggle('active', on);
+    el.classList.toggle('has-data', schoolHasData(SCHOOLS[si]));
+    if(on) el.scrollIntoView({block:'center', behavior:'smooth'});
+  });
+}
+
+// ---------------- ADD SCHOOL ----------------
+async function addSchool(){
+  if(IS_ARCHIVE) return;
+  const si = SCHOOLS.length;
+  const newSchool = {
+    id: `school-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
+    name: '新しい学校',
+    tab: '新しい学校',
+    tel: '',
+    fax: '',
+    color: TAB_COLORS[si % TAB_COLORS.length],
+    textColor: '#FFFFFF'
+  };
+  SCHOOLS.push(newSchool);
+  PAGES.push(...pagesForSchool(si));
+  await storeSet('schools', SCHOOLS);
+  buildTabRail();
+  await render(si * PAGES_PER_SCHOOL);
+  schoolNameEl.focus();
+  schoolNameEl.select();
+}
+
+// ---------------- DELETE SCHOOL ----------------
+function showConfirm(message){
+  return new Promise(resolve=>{
+    const overlay = document.getElementById('confirmOverlay');
+    document.getElementById('confirmMessage').textContent = message;
+    overlay.classList.add('open');
+    const okBtn = document.getElementById('confirmOkBtn');
+    const cancelBtn = document.getElementById('confirmCancelBtn');
+    function cleanup(result){
+      overlay.classList.remove('open');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      overlay.removeEventListener('click', onBackdrop);
+      resolve(result);
+    }
+    function onOk(){ cleanup(true); }
+    function onCancel(){ cleanup(false); }
+    function onBackdrop(e){ if(e.target === overlay) cleanup(false); }
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    overlay.addEventListener('click', onBackdrop);
+  });
+}
+
+async function deleteCurrentSchool(){
+  if(IS_ARCHIVE) return;
+  if(PAGES.length === 0) return;
+  const si = PAGES[currentIndex].schoolIdx;
+  const s = SCHOOLS[si];
+  const ok = await showConfirm(`「${s.tab}」を削除します。\n入力済みの台帳・メモのデータも削除され、元に戻せません。よろしいですか？`);
+  if(!ok) return;
+
+  clearTimeout(saveTimer);
+  await storeDelete(`rec:${s.id}:1`);
+  for(const sub of SUBJECTS) await storeDelete(`memo:${s.id}:${sub}`);
+
+  SCHOOLS.splice(si, 1);
+  rebuildPages();
+  await storeSet('schools', SCHOOLS);
+  buildTabRail();
+
+  if(PAGES.length === 0){
+    renderEmptyState();
+    showToast('学校を削除しました');
+    return;
+  }
+  const nextIdx = Math.min(si * PAGES_PER_SCHOOL, PAGES.length - 1);
+  await render(nextIdx);
+  showToast('学校を削除しました');
+}
+
+// ---------------- BOTTOM DOTS ----------------
+function buildDots(){
+  const si = PAGES[currentIndex].schoolIdx;
+  const s = SCHOOLS[si];
+  dotsEl.innerHTML = '';
+  const d = document.createElement('div');
+  d.className = 'dot';
+  d.textContent = '台';
+  if(RECORDED_KEYS.has(`rec:${s.id}:1`)) d.classList.add('has-data');
+  d.addEventListener('click', ()=> goTo(si*PAGES_PER_SCHOOL, true));
+  dotsEl.appendChild(d);
+  SUBJECTS.forEach((sub, si2)=>{
+    const m = document.createElement('div');
+    m.className = 'dot subj';
+    if(RECORDED_KEYS.has(`memo:${s.id}:${sub}`)) m.classList.add('has-data');
+    m.textContent = SUBJECT_DOT[sub];
+    m.title = sub;
+    m.addEventListener('click', ()=> goTo(si*PAGES_PER_SCHOOL + 1 + si2, true));
+    dotsEl.appendChild(m);
+  });
+  updateDots();
+}
+function updateDots(){
+  const p = PAGES[currentIndex];
+  [...dotsEl.children].forEach((el, i)=>{
+    const on = (p.kind==='ledger' && i===0) || (p.kind==='memo' && SUBJECTS[i-1] === p.subject);
+    el.classList.toggle('active', on);
+  });
+}
+
+// ---------------- KEY BUILDERS ----------------
+function recordKey(p){
+  const s = SCHOOLS[p.schoolIdx];
+  return p.kind==='ledger' ? `rec:${s.id}:1` : `memo:${s.id}:${p.subject}`;
+}
+
+function defaultLedgerData(){
+  return { qty:{}, shunin:{}, kettei:{}, enrol:['','',''], visits:[], priceOverride:{}, pubSelect:{} };
+}
+function defaultMemoData(){
+  return { entries:[] };
+}
+
+// ---------------- RENDER ----------------
+async function render(idx){
+  currentIndex = idx;
+  const p = PAGES[idx];
+  const school = SCHOOLS[p.schoolIdx];
+
+  schoolNameEl.disabled = false;
+  schoolNameEl.value = school.tab;
+  pageKindEl.textContent = p.kind==='ledger' ? '受注台帳' : `${p.subject}メモ`;
+  telInputEl.value = school.tel || '';
+  faxInputEl.value = school.fax || '';
+
+  updateTabRail();
+  buildDots();
+
+  const key = recordKey(p);
+  const stored = await storeGet(key);
+  currentData = stored || (p.kind==='ledger' ? defaultLedgerData() : defaultMemoData());
+  if(p.kind==='ledger'){
+    currentData = Object.assign(defaultLedgerData(), currentData);
+    if(!Array.isArray(currentData.enrol) || currentData.enrol.length !== 3) currentData.enrol = ['','',''];
+  } else {
+    currentData = Object.assign(defaultMemoData(), currentData);
+  }
+
+  pageTrack.innerHTML = p.kind==='ledger' ? renderLedgerPage(p) : renderMemoPage(p);
+  pageTrack.scrollTop = 0;
+  pageTrack.classList.remove('fade-enter');
+  void pageTrack.offsetWidth;
+  pageTrack.classList.add('fade-enter');
+
+  wireEvents(p);
+  storeSet('lastPage', idx);
+  if(IS_ARCHIVE) lockdownUI();
+}
+
+function lockdownUI(){
+  pageTrack.querySelectorAll('input, textarea, button').forEach(el=> el.disabled = true);
+  schoolNameEl.disabled = true;
+  telInputEl.disabled = true;
+  faxInputEl.disabled = true;
+}
+
+function showArchiveBanner(){
+  const el = document.getElementById('archiveBanner');
+  const year = esc(ARCHIVE_DATA.yearName || '');
+  const date = esc(ARCHIVE_DATA.exportDate || '');
+  el.textContent = `📦 閲覧専用アーカイブ（${year}）・書き出し日: ${date}`;
+}
+
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// 右端(最新)年度ラベルから左3列分を自動算出（例: R8 → R5,R6,R7,R8）
+function cascadeYearLabels(rightVal){
+  const m = rightVal.match(/^(\D*)(\d+)(\D*)$/);
+  if(!m) return null;
+  const prefix = m[1], num = parseInt(m[2],10), suffix = m[3];
+  if(isNaN(num)) return null;
+  return [0,1,2].map(i => `${prefix}${num-(3-i)}${suffix}`);
+}
+
+// ---------------- SAVE TOAST ----------------
+let toastTimer = null;
+function showToast(message, opts){
+  opts = opts || {};
+  const el = document.getElementById('saveToast');
+  el.innerHTML = `<span class="tick">✓</span><span>${esc(message)}</span>` +
+    (opts.undo ? `<span class="undoLink" id="toastUndo">元に戻す</span>` : '');
+  if(opts.undo){
+    document.getElementById('toastUndo').addEventListener('click', ()=>{
+      opts.undo();
+      el.classList.remove('show');
+      clearTimeout(toastTimer);
+    });
+  }
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> el.classList.remove('show'), opts.duration || (opts.undo ? 3200 : 1400));
+}
+
+// ---------------- LEDGER PAGE ----------------
+function yearHeaderRow(){
+  let h = `<div class="lgrid lheader"><span class="hcell">学年</span>`;
+  for(let y=0; y<4; y++){
+    h += `<div class="yearcell${y===3?' hl':''}">
+      <input type="text" class="yearlabel-input" data-yearidx="${y}" value="${esc(YEAR_LABELS[y])}">
+      <div class="subhcells"><span class="stu">生徒</span><span class="tea">教師</span></div>
+    </div>`;
+  }
+  h += `<span class="hcell">主任</span><span class="hcell">決定</span></div>`;
+  return h;
+}
+
+function renderLedgerPage(p){
+  let html = '';
+  SECTIONS.forEach((sec, si)=>{
+    html += `<div class="section"><h2><span class="eyebrow">${esc(sec.title)}</span> 受注状況</h2>`;
+    html += yearHeaderRow();
+    sec.items.forEach((item, ii)=>{
+      const priceKey = `${si}-${ii}`;
+      const priceHtml = typeof item.price==='number'
+        ? `<span class="item-price">¥${item.price}</span>`
+        : `<span class="item-price">¥<input type="number" inputmode="numeric" min="0" class="price-input" data-priceidx="${priceKey}" placeholder="金額" value="${esc(currentData.priceOverride[priceKey]||'')}"></span>`;
+      html += `<div class="item">
+        <div class="item-top">
+          <span class="item-name">${esc(item.name)}</span>
+          ${priceHtml}
+        </div>`;
+      if(item.pubs && item.pubs.length){
+        const selPub = currentData.pubSelect[priceKey];
+        html += `<div class="pubrow" data-pubgroup="${priceKey}">`;
+        item.pubs.forEach((pub, pi)=>{
+          html += `<span class="chip ${selPub===pi?'on':''}" data-itemkey="${priceKey}" data-pubidx="${pi}"><span class="ring"></span>${esc(pub)}</span>`;
+        });
+        html += `</div>`;
+      }
+      item.grades.forEach(g=>{
+        const base = `${si}-${ii}-${g}`;
+        html += `<div class="lgrid lrow"><span class="glabel">${g ? g+'年' : '―'}</span>`;
+        for(let y=0; y<4; y++){
+          const k = `${base}-${y}`;
+          const stuVal = (currentData.qty[k]||{}).s || '';
+          const teaVal = (currentData.qty[k]||{}).t || '';
+          html += `<div class="qtypair${y===3?' hl':''}">
+            <input type="number" inputmode="numeric" min="0" class="qty stu" data-qkey="${k}" data-qfield="s" value="${esc(stuVal)}">
+            <input type="number" inputmode="numeric" min="0" class="qty tea" data-qkey="${k}" data-qfield="t" value="${esc(teaVal)}">
+          </div>`;
+        }
+        html += `<input type="text" class="shunin" data-skey="${base}" placeholder="主任" value="${esc(currentData.shunin[base]||'')}">`;
+        html += `<button type="button" class="kbtn ${currentData.kettei[base]?'on':''}" data-kkey="${base}">決</button>`;
+        html += `</div>`;
+      });
+      html += `</div>`;
+    });
+    html += `</div>`;
+  });
+
+  // --- 学年別在籍数 ---
+  html += `<div class="section"><h2><span class="eyebrow">在籍</span> 学年別人数</h2><div class="enrolgrid">`;
+  for(let g=0; g<3; g++){
+    html += `<div class="classcell"><span class="clabel">${g+1}年</span><div class="stepper">
+      <button type="button" class="stepbtn" data-steptarget="enr-${g}" data-stepdelta="-1">−</button>
+      <input type="number" inputmode="numeric" min="0" id="enr-${g}" data-enrolidx="${g}" value="${esc(currentData.enrol[g])}">
+      <button type="button" class="stepbtn" data-steptarget="enr-${g}" data-stepdelta="1">＋</button>
+    </div></div>`;
+  }
+  const total = currentData.enrol.reduce((a,b)=> a + (parseInt(b)||0), 0);
+  html += `</div><div class="classtotal">在籍合計　<b id="enrolTotal">${total}</b> 名</div></div>`;
+
+  // --- 営業記録 ---
+  html += `<div class="section"><h2><span class="eyebrow">記録</span> 営業内容</h2><div id="visitsList">`;
+  html += renderVisits(currentData.visits);
+  html += `</div><button class="addbtn" id="addVisit">＋ 記録を追加</button></div>`;
+
+  return html;
+}
+
+function renderVisits(rows){
+  if(!rows.length) return `<div class="empty-hint">訪問記録がまだありません。</div>`;
+  return rows.map((r,i)=>`
+    <div class="dyn-row" data-vidx="${i}">
+      <button class="delrow" data-delvisit="${i}">×</button>
+      <div class="visit-cols">
+        <input type="date" data-vfield="date" data-vidx="${i}" value="${esc(r.date)}">
+        <input type="text" placeholder="先生名" data-vfield="teacher" data-vidx="${i}" value="${esc(r.teacher)}">
+        <textarea placeholder="営業内容" data-vfield="content" data-vidx="${i}">${esc(r.content)}</textarea>
+      </div>
+    </div>`).join('');
+}
+
+function renderMemoPage(p){
+  const school = SCHOOLS[p.schoolIdx];
+  let html = `<div class="memopage-hero">${esc(school.tab)}　<span class="stamp">${esc(p.subject)}</span></div>`;
+  html += `<div class="section"><h2><span class="eyebrow">記録</span> 訪問・営業ログ</h2><div id="visitsList">`;
+  html += renderVisits(currentData.entries);
+  html += `</div><button class="addbtn" id="addVisit">＋ 記録を追加</button></div>`;
+  return html;
+}
+
+// ---------------- EVENT WIRING ----------------
+function scheduleSave(){
+  if(IS_ARCHIVE) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async ()=>{
+    await storeSet(recordKey(PAGES[currentIndex]), currentData);
+    showToast('保存しました');
+    refreshBadges();
+  }, 250);
+}
+
+function wireEvents(p){
+  pageTrack.querySelectorAll('.stepbtn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const input = document.getElementById(btn.dataset.steptarget);
+      if(!input) return;
+      const next = Math.max(0, (parseInt(input.value)||0) + Number(btn.dataset.stepdelta));
+      input.value = next;
+      input.dispatchEvent(new Event('input', {bubbles:true}));
+    });
+  });
+
+  // 年度ラベル(4列・全台帳共通)
+  pageTrack.querySelectorAll('[data-yearidx]').forEach(el=>{
+    el.addEventListener('change', ()=>{
+      const y = Number(el.dataset.yearidx);
+      const val = el.value.trim() || YEAR_LABELS[y];
+      YEAR_LABELS[y] = val;
+      pageTrack.querySelectorAll(`[data-yearidx="${y}"]`).forEach(x=> x.value = val);
+      // 一番右側(最新年度)を入力したら、左3列を自動算出して連動
+      if(y === 3){
+        const auto = cascadeYearLabels(val);
+        if(auto){
+          for(let i=0; i<3; i++){
+            YEAR_LABELS[i] = auto[i];
+            pageTrack.querySelectorAll(`[data-yearidx="${i}"]`).forEach(x=> x.value = auto[i]);
+          }
+        }
+      }
+      storeSet('yearLabels4', YEAR_LABELS);
+    });
+  });
+
+  if(p.kind==='ledger'){
+    // 数量
+    pageTrack.querySelectorAll('[data-qkey]').forEach(el=>{
+      el.addEventListener('input', ()=>{
+        const k = el.dataset.qkey, f = el.dataset.qfield;
+        currentData.qty[k] = currentData.qty[k] || {};
+        currentData.qty[k][f] = el.value;
+        scheduleSave();
+      });
+    });
+    // 主任
+    pageTrack.querySelectorAll('[data-skey]').forEach(el=>{
+      el.addEventListener('input', ()=>{
+        currentData.shunin[el.dataset.skey] = el.value;
+        scheduleSave();
+      });
+    });
+    // 決定
+    pageTrack.querySelectorAll('[data-kkey]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const k = el.dataset.kkey;
+        currentData.kettei[k] = !currentData.kettei[k];
+        el.classList.toggle('on', currentData.kettei[k]);
+        scheduleSave();
+      });
+    });
+    // 金額入力(価格未定の教材)
+    pageTrack.querySelectorAll('[data-priceidx]').forEach(el=>{
+      el.addEventListener('input', ()=>{
+        currentData.priceOverride[el.dataset.priceidx] = el.value;
+        scheduleSave();
+      });
+    });
+    // 採択(出版社)チップ ― 1教材につき1つだけ選択可
+    pageTrack.querySelectorAll('[data-itemkey][data-pubidx]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const key = el.dataset.itemkey;
+        const idx = Number(el.dataset.pubidx);
+        const cur = currentData.pubSelect[key];
+        currentData.pubSelect[key] = (cur === idx) ? null : idx;
+        const group = el.closest('.pubrow');
+        if(group){
+          group.querySelectorAll('.chip').forEach((c,ci)=>{
+            c.classList.toggle('on', currentData.pubSelect[key] === ci);
+          });
+        }
+        scheduleSave();
+      });
+    });
+    // 在籍数
+    pageTrack.querySelectorAll('[data-enrolidx]').forEach(el=>{
+      el.addEventListener('input', ()=>{
+        currentData.enrol[Number(el.dataset.enrolidx)] = el.value;
+        const total = currentData.enrol.reduce((a,b)=> a + (parseInt(b)||0), 0);
+        const totalEl = document.getElementById('enrolTotal');
+        if(totalEl) totalEl.textContent = total;
+        scheduleSave();
+      });
+    });
+    wireVisits(currentData.visits);
+    document.getElementById('addVisit').addEventListener('click', ()=>{
+      currentData.visits.push({date:'',teacher:'',content:''});
+      document.getElementById('visitsList').innerHTML = renderVisits(currentData.visits);
+      wireVisits(currentData.visits);
+      scheduleSave();
+    });
+  } else {
+    wireVisits(currentData.entries);
+    document.getElementById('addVisit').addEventListener('click', ()=>{
+      currentData.entries.push({date:'',teacher:'',content:''});
+      document.getElementById('visitsList').innerHTML = renderVisits(currentData.entries);
+      wireVisits(currentData.entries);
+      scheduleSave();
+    });
+  }
+}
+
+function wireVisits(arr){
+  pageTrack.querySelectorAll('[data-vfield]').forEach(el=>{
+    el.addEventListener('input', ()=>{
+      arr[Number(el.dataset.vidx)][el.dataset.vfield] = el.value;
+      scheduleSave();
+    });
+  });
+  pageTrack.querySelectorAll('[data-delvisit]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const idx = Number(el.dataset.delvisit);
+      const removed = arr[idx];
+      arr.splice(idx,1);
+      document.getElementById('visitsList').innerHTML = renderVisits(arr);
+      wireVisits(arr);
+      scheduleSave();
+      showToast('記録を削除しました', {undo:()=>{
+        arr.splice(idx,0,removed);
+        document.getElementById('visitsList').innerHTML = renderVisits(arr);
+        wireVisits(arr);
+        scheduleSave();
+      }});
+    });
+  });
+}
+
+// ---------------- NAVIGATION ----------------
+function goTo(idx, animate){
+  if(PAGES.length === 0) return;
+  if(idx < 0) idx = 0;
+  if(idx > PAGES.length-1) idx = PAGES.length-1;
+  if(idx === currentIndex && !animate) return;
+  render(idx);
+}
+
+document.getElementById('prevBtn').addEventListener('click', ()=> goTo(currentIndex-1, true));
+document.getElementById('nextBtn').addEventListener('click', ()=> goTo(currentIndex+1, true));
+document.addEventListener('keydown', (e)=>{
+  const tag = (document.activeElement && document.activeElement.tagName) || '';
+  if(tag === 'INPUT' || tag === 'TEXTAREA') return;
+  if(e.key==='ArrowLeft') goTo(currentIndex-1, true);
+  if(e.key==='ArrowRight') goTo(currentIndex+1, true);
+  if(e.key==='Escape') closeSearch();
+});
+
+// ---------------- SCHOOL SEARCH ----------------
+function renderSearchResults(query){
+  const q = query.trim();
+  const resultsEl = document.getElementById('searchResults');
+  const filtered = SCHOOLS
+    .map((s, si)=>({s, si}))
+    .filter(({s})=> !q || s.tab.indexOf(q)!==-1 || s.name.indexOf(q)!==-1);
+  if(!filtered.length){
+    const msg = SCHOOLS.length===0 ? '学校がまだ登録されていません。タブ下の「＋」から追加してください。' : `「${esc(q)}」に一致する学校がありません`;
+    resultsEl.innerHTML = `<div class="searchEmpty">${msg}</div>`;
+    return;
+  }
+  resultsEl.innerHTML = filtered.map(({s, si})=>{
+    const has = schoolHasData(s);
+    return `<div class="searchResultRow" data-si="${si}">
+      <span class="swatch" style="background:${esc(s.color||'#999')}"></span>
+      <span class="srname">${esc(s.tab)}</span>
+      ${has ? '<span class="srbadge">入力済</span>' : ''}
+    </div>`;
+  }).join('');
+  resultsEl.querySelectorAll('.searchResultRow').forEach(row=>{
+    row.addEventListener('click', ()=>{
+      const si = Number(row.dataset.si);
+      closeSearch();
+      goTo(si * PAGES_PER_SCHOOL, true);
+    });
+  });
+}
+function openSearch(){
+  document.getElementById('searchOverlay').classList.add('open');
+  const input = document.getElementById('searchInput');
+  input.value = '';
+  renderSearchResults('');
+  setTimeout(()=> input.focus(), 30);
+}
+function closeSearch(){
+  document.getElementById('searchOverlay').classList.remove('open');
+}
+document.getElementById('searchBtn').addEventListener('click', openSearch);
+document.getElementById('deleteSchoolBtn').addEventListener('click', deleteCurrentSchool);
+document.getElementById('searchCloseBtn').addEventListener('click', closeSearch);
+document.getElementById('searchOverlay').addEventListener('click', (e)=>{
+  if(e.target.id === 'searchOverlay') closeSearch();
+});
+document.getElementById('searchInput').addEventListener('input', (e)=> renderSearchResults(e.target.value));
+
+// ---------------- 年度アーカイブ書き出し ----------------
+function openArchiveDialog(){
+  if(IS_ARCHIVE) return;
+  document.getElementById('archiveYearInput').value = '';
+  document.getElementById('archiveOverlay').classList.add('open');
+  setTimeout(()=> document.getElementById('archiveYearInput').focus(), 30);
+}
+function closeArchiveDialog(){
+  document.getElementById('archiveOverlay').classList.remove('open');
+}
+document.getElementById('archiveExportBtn').addEventListener('click', openArchiveDialog);
+document.getElementById('archiveCancelBtn').addEventListener('click', closeArchiveDialog);
+document.getElementById('archiveOverlay').addEventListener('click', (e)=>{
+  if(e.target.id === 'archiveOverlay') closeArchiveDialog();
+});
+document.getElementById('archiveOkBtn').addEventListener('click', async ()=>{
+  const yearName = document.getElementById('archiveYearInput').value.trim() || '年度未設定';
+  closeArchiveDialog();
+  await exportArchive(yearName);
+});
+
+async function exportArchive(yearName){
+  showToast('アーカイブを作成しています…');
+  const records = {};
+  for(const s of SCHOOLS){
+    const recVal = await storeGet(`rec:${s.id}:1`);
+    if(recVal) records[`rec:${s.id}:1`] = recVal;
+    for(const sub of SUBJECTS){
+      const mVal = await storeGet(`memo:${s.id}:${sub}`);
+      if(mVal) records[`memo:${s.id}:${sub}`] = mVal;
+    }
+  }
+  const payload = {
+    yearName,
+    exportDate: new Date().toISOString().slice(0,10),
+    schools: SCHOOLS,
+    yearLabels4: YEAR_LABELS,
+    records
+  };
+  const jsonStr = JSON.stringify(payload).replace(/</g, '\\u003c');
+  let html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  html = html.replace(
+    /<script id="data-archive" type="application\/json">.*?<\/script>/s,
+    ()=> `<script id="data-archive" type="application/json">${jsonStr}<\/script>`
+  );
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `教材受注台帳_中学校_${yearName}_アーカイブ.html`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=> URL.revokeObjectURL(url), 4000);
+  showToast('書き出しました');
+}
+
+// swipe
+let touchStartX = null, touchStartY = null, touching=false;
+const viewport = document.getElementById('viewport');
+viewport.addEventListener('touchstart', (e)=>{
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+  touching = true;
+}, {passive:true});
+viewport.addEventListener('touchend', (e)=>{
+  if(!touching) return;
+  touching = false;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)*1.4){
+    if(dx < 0) goTo(currentIndex+1, true); else goTo(currentIndex-1, true);
+  }
+}, {passive:true});
+
+// ---------------- SCHOOL NAME / CONTACT EDITING ----------------
+schoolNameEl.addEventListener('change', async ()=>{
+  if(IS_ARCHIVE || PAGES.length === 0) return;
+  const s = SCHOOLS[PAGES[currentIndex].schoolIdx];
+  const val = schoolNameEl.value.trim();
+  if(!val){ schoolNameEl.value = s.tab; return; }
+  s.tab = val;
+  s.name = val;
+  await storeSet('schools', SCHOOLS);
+  buildTabRail();
+  updateTabRail();
+});
+telInputEl.addEventListener('change', async ()=>{
+  if(IS_ARCHIVE || PAGES.length === 0) return;
+  SCHOOLS[PAGES[currentIndex].schoolIdx].tel = telInputEl.value.trim();
+  await storeSet('schools', SCHOOLS);
+});
+faxInputEl.addEventListener('change', async ()=>{
+  if(IS_ARCHIVE || PAGES.length === 0) return;
+  SCHOOLS[PAGES[currentIndex].schoolIdx].fax = faxInputEl.value.trim();
+  await storeSet('schools', SCHOOLS);
+});
+
+function renderEmptyState(){
+  schoolNameEl.value = '';
+  schoolNameEl.disabled = true;
+  pageKindEl.textContent = '';
+  telInputEl.value = '';
+  faxInputEl.value = '';
+  dotsEl.innerHTML = '';
+  pageTrack.innerHTML = `<div class="section" style="text-align:center;padding:44px 16px;">
+    <p style="font-size:14px;color:var(--ink-soft);margin-bottom:10px;">まだ学校が登録されていません。</p>
+    <p style="font-size:13px;color:var(--ink-soft);">右のタブ下にある「＋」から最初の学校を追加してください。</p>
+  </div>`;
+}
+
+// ---------------- INIT ----------------
+async function init(){
+  if(IS_ARCHIVE) showArchiveBanner();
+  const savedSchools = await storeGet('schools');
+  if(savedSchools && Array.isArray(savedSchools) && savedSchools.length){
+    SCHOOLS.length = 0;
+    savedSchools.forEach(s=> SCHOOLS.push(s));
+    rebuildPages();
+  }
+  buildTabRail();
+  await loadRecordedKeys();
+  const savedYears = await storeGet('yearLabels4');
+  if(savedYears && Array.isArray(savedYears) && savedYears.length === 4) YEAR_LABELS = savedYears;
+  if(PAGES.length === 0){
+    renderEmptyState();
+    return;
+  }
+  let startIdx = 0;
+  const last = await storeGet('lastPage');
+  if(typeof last === 'number' && last >=0 && last < PAGES.length) startIdx = last;
+  render(startIdx);
+}
+init();
+
+})();
+</script>
+</body>
+</html>
