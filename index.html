@@ -48,7 +48,7 @@ body{
 /* ---------- HEADER ---------- */
 #topbar{
   flex:0 0 auto;
-  padding:10px 70px 10px 16px;
+  padding:10px 16px;
   display:flex;
   align-items:baseline;
   justify-content:space-between;
@@ -57,7 +57,30 @@ body{
   position:relative;
   z-index:25;
 }
-#topbar .titles{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+#topbar .titles{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;min-width:0;flex:1 1 auto;}
+.topbar-actions{display:flex;align-items:center;flex:0 1 auto;min-width:0;}
+#contactInfo{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:2px;
+  min-width:0;
+  flex:0 1 auto;
+}
+.contact-input{
+  font-size:11px;
+  color:var(--ink-soft);
+  text-align:right;
+  line-height:1.4;
+  border:none;
+  border-bottom:1px dashed transparent;
+  background:transparent;
+  width:100%;
+  max-width:118px;
+  min-width:56px;
+  padding:1px 2px;
+  font-family:inherit;
+}
 #schoolName{
   font-family:'Shippori Mincho',serif;
   font-weight:700;
@@ -78,24 +101,6 @@ body{
   font-family:'Shippori Mincho',serif;
   font-size:17px;
   color:var(--ink-soft);
-}
-#contactInfo{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:2px;
-}
-.contact-input{
-  font-size:11px;
-  color:var(--ink-soft);
-  text-align:right;
-  line-height:1.4;
-  border:none;
-  border-bottom:1px dashed transparent;
-  background:transparent;
-  width:118px;
-  padding:1px 2px;
-  font-family:inherit;
 }
 .contact-input:focus{outline:none; border-bottom-color:var(--hanko); background:rgba(255,255,255,0.5);}
 .contact-input::placeholder{color:#B5AD98;}
@@ -314,11 +319,12 @@ body{
   background:#fff;
   border:1px solid var(--rule-soft);
   border-radius:7px;
-  padding:6px 8px;
+  padding:5px 6px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:4px;
+  gap:2px;
+  min-width:0;
 }
 .classcell .clabel{font-size:11px;color:var(--ink-soft);font-weight:700;}
 .classcell input{
@@ -669,13 +675,14 @@ body{
   border-radius:6px;
   overflow:hidden;
   background:#fff;
+  flex:0 0 auto;
 }
 .stepper button{
-  width:26px;height:30px;
+  width:22px;height:28px;
   border:none;
   background:var(--paper-dark);
   color:var(--ink);
-  font-size:15px;
+  font-size:14px;
   font-weight:700;
   font-family:inherit;
   cursor:pointer;
@@ -684,7 +691,7 @@ body{
 }
 .stepper button:active{background:var(--rule-soft);}
 .stepper input{
-  width:38px !important;
+  width:34px !important;
   border:none !important;
   text-align:center;
   padding:5px 0 !important;
@@ -692,126 +699,192 @@ body{
 }
 .stepper input::-webkit-outer-spin-button,
 .stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-.classcell .stepper input{width:34px !important;font-size:14px;}
+.classcell .stepper input{width:26px !important;font-size:13px;}
 
 
-/* ---------- LEDGER GRID (Excelレイアウト準拠・モバイル最適化) ---------- */
-.lgrid{
-  display:grid;
-  grid-template-columns:22px 26px repeat(4, minmax(0,1fr)) 36px;
-  column-gap:4px;
-  align-items:center;
+/* ---------- LEDGER TABLE (Excel忠実再現・横スクロール) ---------- */
+.xlsection h2{margin-bottom:8px;}
+.xltable-wrap{
+  overflow-x:auto;
+  overflow-y:hidden;
+  border:1px solid var(--rule-soft);
+  border-radius:8px;
+  -webkit-overflow-scrolling:touch;
 }
-.lheader{
-  margin:0 0 6px;
+table.xltable{
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:11.5px;
+  white-space:nowrap;
+}
+table.xltable th, table.xltable td{
+  border-right:1px solid var(--rule-soft);
+  border-bottom:1px solid var(--rule-soft);
+  padding:5px 6px;
+  vertical-align:middle;
+}
+table.xltable thead th{
   position:sticky;
   top:0;
-  z-index:6;
-  background:var(--card);
-  padding:6px 0 6px;
-  box-shadow:0 3px 6px -2px rgba(38,52,75,0.14);
-}
-.lheader .hcell{
-  font-size:10px;color:var(--ink-soft);font-weight:700;text-align:center;
-}
-.lheader .yearcell{display:flex;flex-direction:column;gap:2px;}
-.lheader .yearcell .yearlabel-input{width:100%;text-align:center;}
-.yearcell.hl{
-  background:var(--rule-soft);
-  border-radius:6px;
-  padding:3px;
-}
-.yearcell.hl .yearlabel-input{background:var(--hanko);color:#fff;}
-.itemshunin{
-  display:flex; align-items:center; gap:6px;
-  background:#fff;
-  border:1px solid var(--rule-soft);
-  border-radius:7px;
-  padding:6px 8px;
-  margin:4px 0 8px;
-}
-.itemshunin-label{
-  flex:0 0 auto;
-  font-size:10.5px;
-  color:var(--hanko);
+  z-index:4;
+  background:var(--paper-dark);
+  font-size:10px;
   font-weight:700;
-  white-space:nowrap;
-}
-.graderow{padding:5px 0;border-bottom:1px dashed var(--rule-soft);}
-.graderow:last-child{border-bottom:none;}
-.lrowdata2{
-  grid-template-rows:auto auto;
-  row-gap:4px;
-  padding:1px 0;
-}
-.glabel{
-  font-size:11px;font-weight:700;color:var(--ink-soft);
-  display:flex;align-items:center;justify-content:center;
-  height:100%;
-}
-.rowlabel{
-  font-size:9.5px;font-weight:700;color:var(--ink-soft);
-  display:flex;align-items:center;justify-content:center;
-  white-space:nowrap;
-  height:100%;
-}
-.qty{
-  min-width:0;
-  width:100%;
-  border:1px solid var(--rule);
-  border-radius:5px;
-  background:#fff;
+  color:var(--ink-soft);
   text-align:center;
-  font-size:14px;
+  padding:6px 4px;
+}
+table.xltable thead th.corner{
+  position:sticky;
+  left:0;
+  top:0;
+  z-index:6;
+  text-align:left;
+  min-width:118px;
+}
+table.xltable thead th.ycol{min-width:52px;}
+table.xltable thead th.ycol.hl{background:var(--rule-soft);}
+table.xltable thead th.shcol{min-width:96px;}
+.yearlabel-input{
+  width:100%;
+  border:none;
+  background:transparent;
+  text-align:center;
+  font-size:11px;
+  font-weight:700;
+  color:inherit;
+  font-family:inherit;
+  padding:2px 0;
+}
+table.xltable thead th.ycol.hl .yearlabel-input{color:var(--hanko);}
+td.itemcell{
+  position:sticky;
+  left:0;
+  z-index:2;
+  background:var(--card);
+  min-width:118px;
+  max-width:150px;
+  white-space:normal;
+  vertical-align:top;
+}
+.itemname{font-size:12px;font-weight:700;color:var(--ink);line-height:1.35;}
+.itemprice{font-size:10.5px;color:var(--ink-soft);margin-top:1px;}
+.itemprice .price-input{
+  width:52px;
+  border:1px solid var(--rule);
+  border-radius:4px;
+  background:#fff;
+  font-size:10.5px;
   font-family:inherit;
   color:var(--ink);
-  padding:7px 1px;
-  -moz-appearance:textfield;
+  padding:2px 3px;
+  text-align:right;
 }
-.qty.hl{background:var(--rule-soft);color:#1E4FBF;font-weight:700;border-color:var(--rule);}
-.qty::-webkit-outer-spin-button,.qty::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-.qty:focus{outline:2px solid var(--hanko);border-color:var(--hanko);}
-.price-input{
+.pubrow-mini{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px;}
+.pubrow-mini .chip{padding:2px 7px;font-size:10.5px;min-height:20px;}
+td.gradecell{
+  text-align:center;
+  font-size:11px;
+  font-weight:700;
+  color:var(--ink-soft);
+  min-width:30px;
+}
+.gradecycle-btn{
+  width:100%;
+  border:1.3px dashed var(--rule);
+  border-radius:5px;
+  background:#fff;
+  color:var(--hanko);
+  font-size:11px;
+  font-weight:700;
+  font-family:inherit;
+  padding:4px 2px;
+  cursor:pointer;
+}
+.gradecycle-btn:active{background:var(--paper-dark);}
+td.qtycell-stack{padding:3px 4px 4px;}
+.qtybox{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
   border:1px solid var(--rule);
   border-radius:5px;
   background:#fff;
+  overflow:hidden;
+}
+td.qtycell-stack .gradecycle-btn{
+  display:block;
+  width:100%;
+  border:none;
+  border-bottom:1px dashed var(--rule-soft);
+  background:var(--paper-dark);
+  color:var(--hanko);
+  padding:2px 1px;
+  font-size:9px;
+  font-weight:700;
+  font-family:inherit;
+  border-radius:0;
+  margin-bottom:0;
+  cursor:pointer;
+}
+td.qtycell-stack .xlqty{
+  display:block;
+  width:100%;
+  border:none;
+  border-radius:0;
+}
+td.qtycell{text-align:center;min-width:48px;}
+td.qtycell.hl{background:var(--rule-soft);}
+.xlqty{
+  width:40px;
+  border:1px solid var(--rule);
+  border-radius:4px;
+  background:#fff;
+  text-align:center;
   font-size:12px;
   font-family:inherit;
   color:var(--ink);
-  padding:3px 5px;
-  width:72px;
-  text-align:right;
+  padding:4px 1px;
+  -moz-appearance:textfield;
 }
-.price-input::placeholder{color:#B5AD98;}
-.pubrow{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin:2px 0 2px;}
-.pubrow .chip{padding:3px 9px;font-size:12.5px;min-height:26px;}
-.shunin{
-  flex:1;
-  min-width:0;
-  border:1px solid var(--rule-soft);
-  border-radius:6px;
+td.qtycell.hl .xlqty{color:#1E4FBF;font-weight:700;border-color:var(--rule);}
+.xlqty::-webkit-outer-spin-button,.xlqty::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.xlqty:focus{outline:2px solid var(--hanko);border-color:var(--hanko);}
+td.shunincell{
+  min-width:96px;
+  max-width:110px;
+  white-space:normal;
+  vertical-align:top;
   background:#fff;
-  font-size:13px;
+}
+.shunin-name{
+  width:100%;
+  border:none;
+  border-bottom:1px dashed var(--rule-soft);
+  background:transparent;
+  font-size:11.5px;
   font-family:inherit;
   color:var(--ink);
-  padding:7px 8px;
+  padding:2px 1px 4px;
 }
-.shunin::placeholder{color:#C9C1A8;}
-.kbtn{
-  width:100%;height:100%;
-  padding:4px 2px;
-  border-radius:8px;
-  border:1.8px solid var(--rule);
-  background:#fff;
-  color:var(--ink-soft);
-  font-size:10.5px;
-  font-weight:700;
+.shunin-name::placeholder{color:#C9C1A8;}
+.shunin-div{height:5px;}
+.shunin-teacher{display:flex;align-items:center;gap:4px;}
+.shunin-teacher .tlabel{font-size:9px;color:var(--hanko);font-weight:700;white-space:nowrap;}
+.teacher-count{
+  width:36px;
+  border:1px solid var(--rule);
+  border-radius:4px;
+  background:#FAF8EF;
+  text-align:center;
+  font-size:11px;
   font-family:inherit;
-  cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
+  color:var(--ink);
+  padding:2px 1px;
+  -moz-appearance:textfield;
 }
-.kbtn.on{background:var(--hanko);border-color:var(--hanko);color:#fff;}
-.enrolgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.teacher-count::-webkit-outer-spin-button,.teacher-count::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.enrolgrid{display:grid;grid-template-columns:repeat(auto-fit, minmax(96px,1fr));gap:6px;}
 
 /* ---------- ARCHIVE (年度アーカイブ) ---------- */
 #archiveBanner{
@@ -886,6 +959,22 @@ body.archive-mode #archiveBanner{display:block;}
 #archiveOkBtn{border-color:var(--forest);background:var(--forest);color:#fff;}
 #archiveOkBtn:active{opacity:0.85;}
 #archiveCancelBtn:active{background:var(--paper-dark);}
+#archiveDownloadLink{
+  display:block;
+  width:100%;
+  box-sizing:border-box;
+  text-align:center;
+  padding:13px 8px;
+  border-radius:8px;
+  background:var(--forest);
+  color:#fff;
+  font-weight:700;
+  font-size:14px;
+  text-decoration:none;
+  margin-bottom:14px;
+}
+#archiveDownloadLink:active{opacity:0.85;}
+#archiveCloseReadyBtn{width:100%;}
 
 /* アーカイブ(閲覧専用)モード時のロックダウン表示 */
 body.archive-mode input:disabled,
@@ -915,7 +1004,7 @@ body.archive-mode #archiveExportBtn{display:none !important;}
     <input id="schoolName" type="text" placeholder="学校名" autocomplete="off">
     <span id="pageKind">―</span>
   </div>
-  <div style="display:flex;align-items:center;">
+  <div class="topbar-actions">
     <div id="contactInfo">
       <input id="telInput" class="contact-input" placeholder="TEL 未入力" autocomplete="off">
       <input id="faxInput" class="contact-input" placeholder="FAX 未入力" autocomplete="off">
@@ -938,11 +1027,20 @@ body.archive-mode #archiveExportBtn{display:none !important;}
 
 <div id="archiveOverlay">
   <div id="archivePanel">
-    <div id="archiveMessage">書き出す年度名を入力してください（例：令和8年度）</div>
-    <input type="text" id="archiveYearInput" placeholder="令和8年度" autocomplete="off">
-    <div id="archiveButtons">
-      <button id="archiveCancelBtn" type="button">キャンセル</button>
-      <button id="archiveOkBtn" type="button">書き出す</button>
+    <div id="archiveStepInput">
+      <div id="archiveMessage">書き出す年度名を入力してください（例：令和8年度）</div>
+      <input type="text" id="archiveYearInput" placeholder="令和8年度" autocomplete="off">
+      <div id="archiveButtons">
+        <button id="archiveCancelBtn" type="button">キャンセル</button>
+        <button id="archiveOkBtn" type="button">書き出す</button>
+      </div>
+    </div>
+    <div id="archiveStepReady" style="display:none;">
+      <div id="archiveMessage">書き出しの準備ができました。下のボタンをタップして保存してください。</div>
+      <a id="archiveDownloadLink" href="#" download>📥 保存する</a>
+      <div id="archiveButtons">
+        <button id="archiveCloseReadyBtn" type="button">閉じる</button>
+      </div>
     </div>
   </div>
 </div>
@@ -973,7 +1071,7 @@ body.archive-mode #archiveExportBtn{display:none !important;}
 
 <script id="data-schools" type="application/json">[]</script>
 <script id="data-archive" type="application/json"></script>
-<script id="data-items" type="application/json">[{"title": "教材", "items": [{"name": "理科学習ノート", "price": 580, "grades": [1, 2, 3], "pubs": ["東書"]}, {"name": "保健学習ノート", "price": 500, "grades": [1, 2, 3], "pubs": ["学研", "東書"], "shuninKey": "hoken_taiiku", "shuninLabel": "保健体育（保健・体育実技）"}, {"name": "体育実技ノート", "price": 500, "grades": [1, 2, 3], "pubs": [], "shuninKey": "hoken_taiiku"}, {"name": "地理学習ノートⅠ", "price": 590, "grades": [1], "pubs": [], "shuninKey": "shakai", "shuninLabel": "社会（地理・歴史）"}, {"name": "地理学習ノートⅡ", "price": 590, "grades": [2], "pubs": [], "shuninKey": "shakai"}, {"name": "歴史学習ノートⅠ", "price": 590, "grades": [1], "pubs": [], "shuninKey": "shakai"}, {"name": "歴史学習ノートⅡ", "price": 590, "grades": [2], "pubs": [], "shuninKey": "shakai"}, {"name": "歴史学習ノートⅢ", "price": 590, "grades": [3], "pubs": [], "shuninKey": "shakai"}, {"name": "ニュートンJr.", "price": 580, "grades": [1, 2, 3], "pubs": ["東書"]}, {"name": "新版 英語学習ノート", "price": 670, "grades": [1, 2, 3], "pubs": ["開隆堂"]}]}, {"title": "技家", "items": [{"name": "家庭分野パート1", "price": 510, "grades": [0], "pubs": ["東書", "教図"], "shuninKey": "katei"}, {"name": "家庭分野パート2", "price": 510, "grades": [0], "pubs": ["東書", "教図"], "shuninKey": "katei"}, {"name": "家庭分野1", "price": 480, "grades": [0], "pubs": ["東書"], "shuninKey": "katei"}, {"name": "解答シール", "price": 60, "grades": [0], "pubs": ["東書"], "shuninKey": "katei"}, {"name": "家庭分野2", "price": 480, "grades": [0], "pubs": ["東書"], "shuninKey": "katei"}, {"name": "家庭分野3", "price": 320, "grades": [0], "pubs": ["東書"], "shuninKey": "katei"}, {"name": "材料と加工", "price": 370, "grades": [0], "pubs": ["東書", "開隆堂"], "shuninKey": "gijutsu"}, {"name": "エネルギー変換・生物育成", "price": 410, "grades": [0], "pubs": ["東書", "開隆堂"], "shuninKey": "gijutsu"}, {"name": "情報", "price": 370, "grades": [0], "pubs": ["東書", "開隆堂"], "shuninKey": "gijutsu"}]}, {"title": "その他", "items": [{"name": "道徳ノート", "price": 160, "grades": [1, 2, 3], "pubs": []}, {"name": "身分証明書", "price": null, "grades": [0], "pubs": [], "shuninKey": "sonota"}, {"name": "パウチフィルム", "price": 12, "grades": [0], "pubs": [], "shuninKey": "sonota"}]}]</script>
+<script id="data-items" type="application/json">[{"title": "教材", "items": [{"name": "理科学習ノート", "price": 580, "grades": [1, 2, 3], "pubs": ["東書"]}, {"name": "保健学習ノート", "price": 500, "grades": [1, 2, 3], "pubs": ["学研", "東書"], "shuninKey": "hoken_taiiku", "shuninLabel": "保健体育（保健・体育実技）"}, {"name": "体育実技ノート", "price": 500, "grades": [1, 2, 3], "pubs": [], "shuninKey": "hoken_taiiku"}, {"name": "地理学習ノートⅠ", "price": 590, "grades": [1], "pubs": [], "shuninKey": "shakai", "shuninLabel": "社会（地理・歴史）"}, {"name": "地理学習ノートⅡ", "price": 590, "grades": [2], "pubs": [], "shuninKey": "shakai"}, {"name": "歴史学習ノートⅠ", "price": 590, "grades": [1], "pubs": [], "shuninKey": "shakai"}, {"name": "歴史学習ノートⅡ", "price": 590, "grades": [2], "pubs": [], "shuninKey": "shakai"}, {"name": "歴史学習ノートⅢ", "price": 590, "grades": [3], "pubs": [], "shuninKey": "shakai"}, {"name": "ニュートンJr.", "price": 580, "grades": [1, 2, 3], "pubs": ["東書"]}, {"name": "新版 英語学習ノート", "price": 670, "grades": [1, 2, 3], "pubs": ["開隆堂"]}]}, {"title": "技家", "items": [{"name": "家庭分野パート1", "price": 510, "grades": [0], "pubs": ["東書", "教図"], "shuninKey": "katei"}, {"name": "家庭分野パート2", "price": 510, "grades": [0], "pubs": ["東書", "教図"], "shuninKey": "katei"}, {"name": "家庭分野1", "price": 480, "grades": [0], "pubs": ["東書"], "shuninKey": "katei"}, {"name": "解答シール", "price": 60, "grades": [0], "pubs": ["東書"], "shuninKey": "katei"}, {"name": "家庭分野2", "price": 480, "grades": [0], "pubs": ["東書"], "shuninKey": "katei"}, {"name": "家庭分野3", "price": 320, "grades": [0], "pubs": ["東書"], "shuninKey": "katei"}, {"name": "材料と加工", "price": 370, "grades": [0], "pubs": ["東書", "開隆堂"], "shuninKey": "gijutsu", "cycleGrade": true}, {"name": "エネルギー変換・生物育成", "price": 410, "grades": [0], "pubs": ["東書", "開隆堂"], "shuninKey": "gijutsu", "cycleGrade": true}, {"name": "情報", "price": 370, "grades": [0], "pubs": ["東書", "開隆堂"], "shuninKey": "gijutsu", "cycleGrade": true}]}, {"title": "その他", "items": [{"name": "道徳ノート", "price": 160, "grades": [1, 2, 3], "pubs": []}, {"name": "身分証明書", "price": null, "grades": [0], "pubs": [], "shuninKey": "sonota"}, {"name": "パウチフィルム", "price": 12, "grades": [0], "pubs": [], "shuninKey": "sonota"}]}]</script>
 <script>
 (function(){
 'use strict';
@@ -991,9 +1089,19 @@ if(IS_ARCHIVE) document.body.classList.add('archive-mode');
 
 const TAB_COLORS = ['var(--tab-1)','var(--tab-2)','var(--tab-3)','var(--tab-4)','var(--tab-5)','var(--tab-6)'];
 
-// ---- storage helpers ----
+// ---- storage helpers (Claude artifact環境ではwindow.storage、スタンドアロン
+// ファイルとして開いた場合はlocalStorageに保存し、どちらも使えない場合のみ
+// メモリ内(セッション限り)にフォールバックする) ----
+const STORAGE_PREFIX = 'jhs-ledger:';
 const memFallback = {};
 let storageOK = !!(window.storage && window.storage.get && window.storage.set);
+let localStorageOK = false;
+try{
+  const testKey = '__ls_test__';
+  window.localStorage.setItem(testKey, '1');
+  window.localStorage.removeItem(testKey);
+  localStorageOK = true;
+}catch(e){ localStorageOK = false; }
 
 async function storeGet(key){
   if(IS_ARCHIVE){
@@ -1007,7 +1115,13 @@ async function storeGet(key){
     try{
       const r = await window.storage.get(key, false);
       return r ? JSON.parse(r.value) : null;
-    }catch(e){ return null; }
+    }catch(e){ /* fall through */ }
+  }
+  if(localStorageOK){
+    try{
+      const raw = window.localStorage.getItem(STORAGE_PREFIX + key);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ /* fall through */ }
   }
   return memFallback[key] || null;
 }
@@ -1021,6 +1135,13 @@ async function storeSet(key, value){
     }
     catch(e){ /* fall through */ }
   }
+  if(localStorageOK){
+    try{
+      window.localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
+      if(key.indexOf('rec:')===0 || key.indexOf('memo:')===0) RECORDED_KEYS.add(key);
+      return;
+    }catch(e){ /* fall through(容量超過などの場合) */ }
+  }
   memFallback[key] = value;
   if(key.indexOf('rec:')===0 || key.indexOf('memo:')===0) RECORDED_KEYS.add(key);
 }
@@ -1028,6 +1149,9 @@ async function storeDelete(key){
   if(IS_ARCHIVE) return;
   if(storageOK){
     try{ await window.storage.delete(key, false); }
+    catch(e){ /* ignore */ }
+  } else if(localStorageOK){
+    try{ window.localStorage.removeItem(STORAGE_PREFIX + key); }
     catch(e){ /* ignore */ }
   } else {
     delete memFallback[key];
@@ -1073,12 +1197,23 @@ async function loadRecordedKeys(){
       const memoRes = await window.storage.list('memo:', false);
       (recRes && recRes.keys || []).forEach(k=> RECORDED_KEYS.add(k));
       (memoRes && memoRes.keys || []).forEach(k=> RECORDED_KEYS.add(k));
-    }catch(e){ /* ignore */ }
-  } else {
-    Object.keys(memFallback).forEach(k=>{
-      if(k.indexOf('rec:')===0 || k.indexOf('memo:')===0) RECORDED_KEYS.add(k);
-    });
+      return;
+    }catch(e){ /* fall through */ }
   }
+  if(localStorageOK){
+    try{
+      for(let i=0; i<window.localStorage.length; i++){
+        const fullKey = window.localStorage.key(i);
+        if(!fullKey || fullKey.indexOf(STORAGE_PREFIX)!==0) continue;
+        const k = fullKey.slice(STORAGE_PREFIX.length);
+        if(k.indexOf('rec:')===0 || k.indexOf('memo:')===0) RECORDED_KEYS.add(k);
+      }
+      return;
+    }catch(e){ /* fall through */ }
+  }
+  Object.keys(memFallback).forEach(k=>{
+    if(k.indexOf('rec:')===0 || k.indexOf('memo:')===0) RECORDED_KEYS.add(k);
+  });
 }
 function schoolHasMemo(s){
   for(const sub of SUBJECTS){ if(RECORDED_KEYS.has(`memo:${s.id}:${sub}`)) return true; }
@@ -1123,6 +1258,21 @@ function buildTabRail(){
   tabRail.appendChild(addBtn);
 }
 
+// 学校名変更など「並び・件数は変わらない」更新用。tabRail全体を作り直さないため、
+// ちょうどそのタイミングで他のボタン(＋など)をタップしていても取りこぼさない。
+function updateTabLabel(si){
+  const btn = tabRail.querySelector(`.tab[data-si="${si}"]`);
+  if(!btn) return;
+  const s = SCHOOLS[si];
+  // dot(先頭のspan)は残し、テキストノードだけ差し替える
+  while(btn.lastChild && btn.lastChild.nodeType === Node.TEXT_NODE){
+    btn.removeChild(btn.lastChild);
+  }
+  btn.appendChild(document.createTextNode(s.tab));
+  btn.style.background = s.color || TAB_COLORS[si % TAB_COLORS.length];
+  btn.style.color = s.textColor || '#fff';
+}
+
 function updateTabRail(){
   if(PAGES.length === 0) return;
   const activeSi = PAGES[currentIndex].schoolIdx;
@@ -1132,7 +1282,7 @@ function updateTabRail(){
     const on = si === activeSi;
     el.classList.toggle('active', on);
     el.classList.toggle('has-data', schoolHasData(SCHOOLS[si]));
-    if(on) el.scrollIntoView({block:'center', behavior:'smooth'});
+    if(on) el.scrollIntoView({block:'nearest', behavior:'auto'});
   });
 }
 
@@ -1246,7 +1396,7 @@ function recordKey(p){
 }
 
 function defaultLedgerData(){
-  return { qty:{}, shunin:{}, kettei:{}, enrol:['','',''], visits:[], priceOverride:{}, pubSelect:{} };
+  return { qty:{}, shunin:{}, kettei:{}, enrol:['','',''], visits:[], priceOverride:{}, pubSelect:{}, teacherCount:{}, gradeCycle:{} };
 }
 function defaultMemoData(){
   return { entries:[] };
@@ -1335,71 +1485,88 @@ function showToast(message, opts){
 }
 
 // ---------------- LEDGER PAGE ----------------
-function yearHeaderRow(){
-  let h = `<div class="lgrid lheader"><span class="hcell">学年</span><span class="hcell"></span>`;
-  for(let y=0; y<4; y++){
-    h += `<div class="yearcell${y===3?' hl':''}">
-      <input type="text" class="yearlabel-input" data-yearidx="${y}" value="${esc(YEAR_LABELS[y])}">
-    </div>`;
-  }
-  h += `<span class="hcell">決定</span></div>`;
-  return h;
-}
-
 function renderLedgerPage(p){
   let html = '';
-  const shuninRendered = new Set();
   SECTIONS.forEach((sec, si)=>{
-    html += `<div class="section"><h2><span class="eyebrow">${esc(sec.title)}</span> 受注状況</h2>`;
-    html += yearHeaderRow();
-    sec.items.forEach((item, ii)=>{
-      const priceKey = `${si}-${ii}`;
-      const priceHtml = typeof item.price==='number'
-        ? `<span class="item-price">¥${item.price}</span>`
-        : `<span class="item-price">¥<input type="number" inputmode="numeric" min="0" class="price-input" data-priceidx="${priceKey}" placeholder="金額" value="${esc(currentData.priceOverride[priceKey]||'')}"></span>`;
-      html += `<div class="item">
-        <div class="item-top">
-          <span class="item-name">${esc(item.name)}</span>
-          ${priceHtml}
-        </div>`;
-      if(item.pubs && item.pubs.length){
-        const selPub = currentData.pubSelect[priceKey];
-        html += `<div class="pubrow" data-pubgroup="${priceKey}">`;
-        item.pubs.forEach((pub, pi)=>{
-          html += `<span class="chip ${selPub===pi?'on':''}" data-itemkey="${priceKey}" data-pubidx="${pi}"><span class="ring"></span>${esc(pub)}</span>`;
-        });
-        html += `</div>`;
+    html += `<div class="section xlsection"><h2><span class="eyebrow">${esc(sec.title)}</span> 受注状況</h2>`;
+    html += `<div class="xltable-wrap"><table class="xltable"><thead><tr>
+      <th class="corner">教科名</th>
+      <th class="gcol">学年</th>
+      <th class="ycol"><input type="text" class="yearlabel-input" data-yearidx="0" value="${esc(YEAR_LABELS[0])}"></th>
+      <th class="ycol"><input type="text" class="yearlabel-input" data-yearidx="1" value="${esc(YEAR_LABELS[1])}"></th>
+      <th class="ycol"><input type="text" class="yearlabel-input" data-yearidx="2" value="${esc(YEAR_LABELS[2])}"></th>
+      <th class="ycol hl"><input type="text" class="yearlabel-input" data-yearidx="3" value="${esc(YEAR_LABELS[3])}"></th>
+      <th class="shcol">主任</th>
+    </tr></thead><tbody>`;
+
+    let ii = 0;
+    while(ii < sec.items.length){
+      const item = sec.items[ii];
+      const key = item.shuninKey || null;
+      let endIdx = ii;
+      if(key){
+        while(endIdx+1 < sec.items.length && sec.items[endIdx+1].shuninKey === key) endIdx++;
       }
-      // 担当者は教科(教材グループ)につき1つだけ表示
-      const shuninKey = item.shuninKey || priceKey;
-      if(!shuninRendered.has(shuninKey)){
-        shuninRendered.add(shuninKey);
-        html += `<div class="itemshunin">
-          <span class="itemshunin-label">担当者</span>
-          <input type="text" class="shunin" data-skey="${esc(shuninKey)}" placeholder="担当の先生名" value="${esc(currentData.shunin[shuninKey]||'')}">
-        </div>`;
-      }
-      item.grades.forEach(g=>{
-        const base = `${si}-${ii}-${g}`;
-        html += `<div class="graderow"><div class="lgrid lrowdata2">`;
-        html += `<span class="glabel" style="grid-column:1;grid-row:1/3;">${g ? g+'年' : '―'}</span>`;
-        html += `<span class="rowlabel" style="grid-column:2;grid-row:1;">生徒</span>`;
-        html += `<span class="rowlabel" style="grid-column:2;grid-row:2;">教師</span>`;
-        for(let y=0; y<4; y++){
-          const k = `${base}-${y}`;
-          const stuVal = (currentData.qty[k]||{}).s || '';
-          const teaVal = (currentData.qty[k]||{}).t || '';
-          const col = y + 3;
-          const hl = y===3 ? ' hl' : '';
-          html += `<input type="number" inputmode="numeric" min="0" class="qty${hl}" style="grid-column:${col};grid-row:1;" data-qkey="${k}" data-qfield="s" value="${esc(stuVal)}">`;
-          html += `<input type="number" inputmode="numeric" min="0" class="qty${hl}" style="grid-column:${col};grid-row:2;" data-qkey="${k}" data-qfield="t" value="${esc(teaVal)}">`;
+      const groupItems = sec.items.slice(ii, endIdx+1);
+      const totalRows = groupItems.reduce((sum,it)=> sum + it.grades.length, 0);
+      const shuninStoreKey = key || `${si}-${ii}`;
+      const labelText = shuninStoreKey === 'sonota' ? '担当者' : '主任';
+      let firstRowOfGroup = true;
+
+      groupItems.forEach((gItem, gOffset)=>{
+        const realIdx = ii + gOffset;
+        const priceKey = `${si}-${realIdx}`;
+        const priceHtml = typeof gItem.price==='number'
+          ? `¥${gItem.price}`
+          : `¥<input type="number" inputmode="numeric" min="0" class="price-input" data-priceidx="${priceKey}" placeholder="金額" value="${esc(currentData.priceOverride[priceKey]||'')}">`;
+        let pubHtml = '';
+        if(gItem.pubs && gItem.pubs.length){
+          const selPub = currentData.pubSelect[priceKey];
+          pubHtml = `<div class="pubrow-mini" data-pubgroup="${priceKey}">` +
+            gItem.pubs.map((pub,pi)=> `<span class="chip ${selPub===pi?'on':''}" data-itemkey="${priceKey}" data-pubidx="${pi}"><span class="ring"></span>${esc(pub)}</span>`).join('') +
+            `</div>`;
         }
-        html += `<button type="button" class="kbtn ${currentData.kettei[base]?'on':''}" style="grid-column:7;grid-row:1/3;" data-kkey="${base}">決定</button>`;
-        html += `</div></div>`;
+
+        gItem.grades.forEach((g, gi)=>{
+          html += `<tr>`;
+          if(gi === 0){
+            html += `<td class="itemcell" rowspan="${gItem.grades.length}">
+              <div class="itemname">${esc(gItem.name)}</div>
+              <div class="itemprice">${priceHtml}</div>
+              ${pubHtml}
+            </td>`;
+          }
+          html += `<td class="gradecell">${g ? g+'年' : '―'}</td>`;
+          for(let y=0; y<4; y++){
+            const k = `${si}-${realIdx}-${g}-${y}`;
+            const hl = y===3 ? ' hl' : '';
+            if(gItem.cycleGrade){
+              const gcVal = currentData.gradeCycle[k] || '';
+              html += `<td class="qtycell qtycell-stack${hl}"><div class="qtybox">
+                <button type="button" class="gradecycle-btn" data-gckey="${k}">${gcVal ? gcVal+'年' : '―'}</button>
+                <input type="number" inputmode="numeric" min="0" class="xlqty" data-qkey="${k}" value="${esc(currentData.qty[k]||'')}">
+              </div></td>`;
+            } else {
+              html += `<td class="qtycell${hl}"><input type="number" inputmode="numeric" min="0" class="xlqty" data-qkey="${k}" value="${esc(currentData.qty[k]||'')}"></td>`;
+            }
+          }
+          if(firstRowOfGroup){
+            html += `<td class="shunincell" rowspan="${totalRows}">
+              <input type="text" class="shunin-name" placeholder="${labelText}" data-skey="${esc(shuninStoreKey)}" value="${esc(currentData.shunin[shuninStoreKey]||'')}">
+              <div class="shunin-div"></div>
+              <div class="shunin-teacher">
+                <span class="tlabel">教師用</span>
+                <input type="number" inputmode="numeric" min="0" class="teacher-count" data-teacherkey="${esc(shuninStoreKey)}" value="${esc(currentData.teacherCount[shuninStoreKey]||'')}">
+              </div>
+            </td>`;
+            firstRowOfGroup = false;
+          }
+          html += `</tr>`;
+        });
       });
-      html += `</div>`;
-    });
-    html += `</div>`;
+      ii = endIdx + 1;
+    }
+    html += `</tbody></table></div></div>`;
   });
 
   // --- 学年別在籍数 ---
@@ -1488,28 +1655,35 @@ function wireEvents(p){
   });
 
   if(p.kind==='ledger'){
-    // 数量
+    // 数量(生徒用)
     pageTrack.querySelectorAll('[data-qkey]').forEach(el=>{
       el.addEventListener('input', ()=>{
-        const k = el.dataset.qkey, f = el.dataset.qfield;
-        currentData.qty[k] = currentData.qty[k] || {};
-        currentData.qty[k][f] = el.value;
+        currentData.qty[el.dataset.qkey] = el.value;
         scheduleSave();
       });
     });
-    // 担当者
+    // 主任(先生名)
     pageTrack.querySelectorAll('[data-skey]').forEach(el=>{
       el.addEventListener('input', ()=>{
         currentData.shunin[el.dataset.skey] = el.value;
         scheduleSave();
       });
     });
-    // 決定
-    pageTrack.querySelectorAll('[data-kkey]').forEach(el=>{
+    // 教師用の数
+    pageTrack.querySelectorAll('[data-teacherkey]').forEach(el=>{
+      el.addEventListener('input', ()=>{
+        currentData.teacherCount[el.dataset.teacherkey] = el.value;
+        scheduleSave();
+      });
+    });
+    // 学年ループ切替(材料と加工・エネルギー変換・情報)
+    pageTrack.querySelectorAll('[data-gckey]').forEach(el=>{
       el.addEventListener('click', ()=>{
-        const k = el.dataset.kkey;
-        currentData.kettei[k] = !currentData.kettei[k];
-        el.classList.toggle('on', currentData.kettei[k]);
+        const key = el.dataset.gckey;
+        const cur = currentData.gradeCycle[key] || '';
+        const next = cur === '' ? '1' : cur === '1' ? '2' : cur === '2' ? '3' : '';
+        currentData.gradeCycle[key] = next;
+        el.textContent = next ? next+'年' : '―';
         scheduleSave();
       });
     });
@@ -1527,7 +1701,7 @@ function wireEvents(p){
         const idx = Number(el.dataset.pubidx);
         const cur = currentData.pubSelect[key];
         currentData.pubSelect[key] = (cur === idx) ? null : idx;
-        const group = el.closest('.pubrow');
+        const group = el.closest('.pubrow-mini');
         if(group){
           group.querySelectorAll('.chip').forEach((c,ci)=>{
             c.classList.toggle('on', currentData.pubSelect[key] === ci);
@@ -1655,25 +1829,74 @@ document.getElementById('searchOverlay').addEventListener('click', (e)=>{
 document.getElementById('searchInput').addEventListener('input', (e)=> renderSearchResults(e.target.value));
 
 // ---------------- 年度アーカイブ書き出し ----------------
+function isIOSDevice(){
+  const ua = navigator.userAgent || '';
+  const iOSLike = /iPad|iPhone|iPod/.test(ua);
+  // iPadOS 13+ は Mac風のUser-Agentを返すため、タッチ対応で判定を補う
+  const iPadOSMasquerade = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  return iOSLike || iPadOSMasquerade;
+}
+
 function openArchiveDialog(){
   if(IS_ARCHIVE) return;
   document.getElementById('archiveYearInput').value = '';
+  document.getElementById('archiveStepInput').style.display = 'block';
+  document.getElementById('archiveStepReady').style.display = 'none';
   document.getElementById('archiveOverlay').classList.add('open');
   setTimeout(()=> document.getElementById('archiveYearInput').focus(), 30);
 }
 function closeArchiveDialog(){
   document.getElementById('archiveOverlay').classList.remove('open');
+  const link = document.getElementById('archiveDownloadLink');
+  if(link.href && link.href.indexOf('blob:')===0){
+    setTimeout(()=> URL.revokeObjectURL(link.href), 500);
+  }
 }
 document.getElementById('archiveExportBtn').addEventListener('click', openArchiveDialog);
 document.getElementById('archiveCancelBtn').addEventListener('click', closeArchiveDialog);
+document.getElementById('archiveCloseReadyBtn').addEventListener('click', ()=>{
+  closeArchiveDialog();
+  showToast('書き出しました');
+});
 document.getElementById('archiveOverlay').addEventListener('click', (e)=>{
   if(e.target.id === 'archiveOverlay') closeArchiveDialog();
 });
 document.getElementById('archiveOkBtn').addEventListener('click', async ()=>{
   const yearName = document.getElementById('archiveYearInput').value.trim() || '年度未設定';
-  closeArchiveDialog();
   await exportArchive(yearName);
 });
+
+// text/html などブラウザが「表示できる」MIMEタイプだと、保存の代わりにその場で
+// 開こうとするブラウザがある(特にiOS Safari)。application/octet-streamにして
+// 「未知のファイル＝ダウンロード対象」として扱わせるのが最も確実。
+function downloadTextFile(filename, content){
+  const blob = new Blob([content], {type:'application/octet-stream'});
+  const url = URL.createObjectURL(blob);
+
+  if(isIOSDevice()){
+    // iOS Safariはプログラム的な a.click() だとファイル名(拡張子)が失われ
+    // "Unknown" として保存されてしまうことがある。ユーザーが直接タップする
+    // 本物の<a download>リンクであればファイル名が正しく保持されるため、
+    // ダイアログ内に実際にタップしてもらうリンクを表示する方式に切り替える。
+    const link = document.getElementById('archiveDownloadLink');
+    link.href = url;
+    link.download = filename;
+    link.textContent = `📥 ${filename} を保存`;
+    document.getElementById('archiveStepInput').style.display = 'none';
+    document.getElementById('archiveStepReady').style.display = 'block';
+    return;
+  }
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  closeArchiveDialog();
+  showToast('書き出しました');
+  setTimeout(()=> URL.revokeObjectURL(url), 4000);
+}
 
 async function exportArchive(yearName){
   showToast('アーカイブを作成しています…');
@@ -1699,16 +1922,7 @@ async function exportArchive(yearName){
     /<script id="data-archive" type="application\/json">.*?<\/script>/s,
     ()=> `<script id="data-archive" type="application/json">${jsonStr}<\/script>`
   );
-  const blob = new Blob([html], {type:'text/html'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `教材受注台帳_中学校_${yearName}_アーカイブ.html`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(()=> URL.revokeObjectURL(url), 4000);
-  showToast('書き出しました');
+  downloadTextFile(`教材受注台帳_中学校_${yearName}_アーカイブ.html`, html);
 }
 
 // swipe
@@ -1732,14 +1946,15 @@ viewport.addEventListener('touchend', (e)=>{
 // ---------------- SCHOOL NAME / CONTACT EDITING ----------------
 schoolNameEl.addEventListener('change', async ()=>{
   if(IS_ARCHIVE || PAGES.length === 0) return;
-  const s = SCHOOLS[PAGES[currentIndex].schoolIdx];
+  const si = PAGES[currentIndex].schoolIdx;
+  const s = SCHOOLS[si];
   const val = schoolNameEl.value.trim();
   if(!val){ schoolNameEl.value = s.tab; return; }
+  if(val === s.tab) return; // 値に変化がなければ何もしない
   s.tab = val;
   s.name = val;
   await storeSet('schools', SCHOOLS);
-  buildTabRail();
-  updateTabRail();
+  updateTabLabel(si);
 });
 telInputEl.addEventListener('change', async ()=>{
   if(IS_ARCHIVE || PAGES.length === 0) return;
