@@ -899,7 +899,7 @@ td.shunincell{
   letter-spacing:0.02em;
 }
 body.archive-mode #archiveBanner{display:block;}
-#archiveExportBtn{
+#archiveExportBtn, #csvExportBtn{
   display:block;
   width:calc(100% - 24px);
   margin:10px 12px 12px;
@@ -992,7 +992,7 @@ body.archive-mode .addbtn,
 body.archive-mode .delrow,
 body.archive-mode #deleteSchoolBtn,
 body.archive-mode .tab-add,
-body.archive-mode #archiveExportBtn{display:none !important;}
+body.archive-mode #archiveExportBtn, body.archive-mode #csvExportBtn{display:none !important;}
 
 ::-webkit-scrollbar{width:0;height:0;}
 </style>
@@ -1023,6 +1023,7 @@ body.archive-mode #archiveExportBtn{display:none !important;}
     </div>
     <div id="searchResults"></div>
     <button id="archiveExportBtn" type="button">📦 年度アーカイブを書き出す</button>
+    <button id="csvExportBtn" type="button">📊 <span id="csvYearLabel">R8</span>年度 受注集計をCSV書き出す</button>
   </div>
 </div>
 
@@ -1072,7 +1073,7 @@ body.archive-mode #archiveExportBtn{display:none !important;}
 
 <script id="data-schools" type="application/json">[]</script>
 <script id="data-archive" type="application/json"></script>
-<script id="data-items" type="application/json">[{"title": "教材", "items": [{"name": "理科学習ノート", "price": 580, "grades": [1, 2, 3], "pubs": ["東書"]}, {"name": "保健学習ノート", "price": 500, "grades": [1, 2, 3], "pubs": ["学研", "東書"], "shuninKey": "hoken_taiiku", "shuninLabel": "保健体育（保健・体育実技）"}, {"name": "体育実技ノート", "price": 500, "grades": [1, 2, 3], "pubs": [], "shuninKey": "hoken_taiiku"}, {"name": "地理学習ノートⅠ", "price": 590, "grades": [1], "pubs": [], "shuninKey": "shakai", "shuninLabel": "社会（地理・歴史）"}, {"name": "地理学習ノートⅡ", "price": 590, "grades": [2], "pubs": [], "shuninKey": "shakai"}, {"name": "歴史学習ノートⅠ", "price": 590, "grades": [1], "pubs": [], "shuninKey": "shakai"}, {"name": "歴史学習ノートⅡ", "price": 590, "grades": [2], "pubs": [], "shuninKey": "shakai"}, {"name": "歴史学習ノートⅢ", "price": 590, "grades": [3], "pubs": [], "shuninKey": "shakai"}, {"name": "ニュートンJr.", "price": 580, "grades": [1, 2, 3], "pubs": ["東書"]}, {"name": "新版 英語学習ノート", "price": 670, "grades": [1, 2, 3], "pubs": ["開隆堂"]}]}, {"title": "技家", "items": [{"name": "家庭分野パート1", "price": 510, "grades": [0], "pubs": ["東書", "教図"], "shuninKey": "katei"}, {"name": "家庭分野パート2", "price": 510, "grades": [0], "pubs": ["東書", "教図"], "shuninKey": "katei"}, {"name": "家庭分野1", "price": 480, "grades": [0], "pubs": ["東書"], "shuninKey": "katei"}, {"name": "解答シール", "price": 60, "grades": [0], "pubs": ["東書"], "shuninKey": "katei"}, {"name": "家庭分野2", "price": 480, "grades": [0], "pubs": ["東書"], "shuninKey": "katei"}, {"name": "家庭分野3", "price": 320, "grades": [0], "pubs": ["東書"], "shuninKey": "katei"}, {"name": "材料と加工", "price": 370, "grades": [0], "pubs": ["東書", "開隆堂"], "shuninKey": "gijutsu", "cycleGrade": true}, {"name": "エネルギー変換・生物育成", "price": 410, "grades": [0], "pubs": ["東書", "開隆堂"], "shuninKey": "gijutsu", "cycleGrade": true}, {"name": "情報", "price": 370, "grades": [0], "pubs": ["東書", "開隆堂"], "shuninKey": "gijutsu", "cycleGrade": true}]}, {"title": "その他", "items": [{"name": "道徳ノート", "price": 160, "grades": [1, 2, 3], "pubs": []}, {"name": "身分証明書", "price": null, "grades": [0], "pubs": [], "shuninKey": "sonota"}, {"name": "パウチフィルム", "price": 12, "grades": [0], "pubs": [], "shuninKey": "sonota"}]}]</script>
+<script id="data-items" type="application/json">[{"title": "教材", "items": [{"name": "理科学習ノート", "price": 580, "grades": [1, 2, 3], "pubs": ["東書"], "subject": "理科"}, {"name": "保健学習ノート", "price": 500, "grades": [1, 2, 3], "pubs": ["学研", "東書"], "shuninKey": "hoken_taiiku", "shuninLabel": "保健体育（保健・体育実技）", "subject": "保健体育"}, {"name": "体育実技ノート", "price": 500, "grades": [1, 2, 3], "pubs": [], "shuninKey": "hoken_taiiku", "subject": "保健体育"}, {"name": "地理学習ノートⅠ", "price": 590, "grades": [1], "pubs": [], "shuninKey": "shakai", "shuninLabel": "社会（地理・歴史）", "subject": "社会"}, {"name": "地理学習ノートⅡ", "price": 590, "grades": [2], "pubs": [], "shuninKey": "shakai", "subject": "社会"}, {"name": "歴史学習ノートⅠ", "price": 590, "grades": [1], "pubs": [], "shuninKey": "shakai", "subject": "社会"}, {"name": "歴史学習ノートⅡ", "price": 590, "grades": [2], "pubs": [], "shuninKey": "shakai", "subject": "社会"}, {"name": "歴史学習ノートⅢ", "price": 590, "grades": [3], "pubs": [], "shuninKey": "shakai", "subject": "社会"}, {"name": "ニュートンJr.", "price": 580, "grades": [1, 2, 3], "pubs": ["東書"], "subject": "数学"}, {"name": "新版 英語学習ノート", "price": 670, "grades": [1, 2, 3], "pubs": ["開隆堂"], "subject": "英語"}]}, {"title": "技家", "items": [{"name": "家庭分野パート1", "price": 510, "grades": [0], "pubs": ["東書", "教図"], "shuninKey": "katei", "subject": "家庭科"}, {"name": "家庭分野パート2", "price": 510, "grades": [0], "pubs": ["東書", "教図"], "shuninKey": "katei", "subject": "家庭科"}, {"name": "家庭分野1", "price": 480, "grades": [1], "pubs": ["東書"], "shuninKey": "katei", "subject": "家庭科"}, {"name": "解答シール", "price": 60, "grades": [0], "pubs": ["東書"], "shuninKey": "katei", "subject": "家庭科"}, {"name": "家庭分野2", "price": 480, "grades": [2], "pubs": ["東書"], "shuninKey": "katei", "subject": "家庭科"}, {"name": "家庭分野3", "price": 320, "grades": [3], "pubs": ["東書"], "shuninKey": "katei", "subject": "家庭科"}, {"name": "材料と加工", "price": 370, "grades": [0], "pubs": ["東書", "開隆堂"], "shuninKey": "gijutsu", "cycleGrade": true, "subject": "技術"}, {"name": "エネルギー変換・生物育成", "price": 410, "grades": [0], "pubs": ["東書", "開隆堂"], "shuninKey": "gijutsu", "cycleGrade": true, "subject": "技術"}, {"name": "情報", "price": 370, "grades": [0], "pubs": ["東書", "開隆堂"], "shuninKey": "gijutsu", "cycleGrade": true, "subject": "技術"}]}, {"title": "その他", "items": [{"name": "道徳ノート", "price": 160, "grades": [1, 2, 3], "pubs": [], "subject": "道徳"}, {"name": "身分証明書", "price": null, "grades": [0], "pubs": [], "shuninKey": "sonota", "subject": "その他"}, {"name": "パウチフィルム", "price": 12, "grades": [0], "pubs": [], "shuninKey": "sonota", "subject": "その他"}]}]</script>
 <script>
 (function(){
 'use strict';
@@ -1652,6 +1653,7 @@ function wireEvents(p){
         }
       }
       storeSet('yearLabels4', YEAR_LABELS);
+      updateCsvYearLabel();
     });
   });
 
@@ -1661,6 +1663,22 @@ function wireEvents(p){
       el.addEventListener('input', ()=>{
         currentData.qty[el.dataset.qkey] = el.value;
         scheduleSave();
+      });
+    });
+    // 各年度(R5〜R8)列: 3桁(百の位まで)入力したら同じ列の次の行へ自動移動
+    const qtyColumns = {0:[], 1:[], 2:[], 3:[]};
+    pageTrack.querySelectorAll('.xlqty').forEach(el=>{
+      const y = Number(el.dataset.qkey.split('-').pop());
+      if(qtyColumns[y]) qtyColumns[y].push(el);
+    });
+    Object.values(qtyColumns).forEach(list=>{
+      list.forEach((el, idx)=>{
+        el.addEventListener('input', ()=>{
+          if(el.value.length >= 3){
+            const next = list[idx+1];
+            if(next) next.focus();
+          }
+        });
       });
     });
     // 主任(先生名)
@@ -1926,6 +1944,70 @@ async function exportArchive(yearName){
   downloadTextFile(`教材受注台帳_中学校_${yearName}_アーカイブ.html`, html);
 }
 
+// ---------------- 受注集計CSV書き出し ----------------
+function updateCsvYearLabel(){
+  const el = document.getElementById('csvYearLabel');
+  if(el) el.textContent = YEAR_LABELS[3] || 'R8';
+}
+
+function csvEscape(v){
+  const s = String(v==null ? '' : v);
+  if(/[",\r\n]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
+  return s;
+}
+
+function downloadCSV(filename, content){
+  const blob = new Blob(['﻿' + content], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=> URL.revokeObjectURL(url), 4000);
+}
+
+async function exportOrderSummaryCSV(){
+  showToast('集計を作成しています…');
+  const yearIdx = 3;
+  const yearLabel = YEAR_LABELS[yearIdx] || 'R8';
+  const rows = [];
+  for(const s of SCHOOLS){
+    const rec = await storeGet(`rec:${s.id}:1`);
+    if(!rec || !rec.qty) continue;
+    SECTIONS.forEach((sec, si)=>{
+      sec.items.forEach((item, ii)=>{
+        const priceKey = `${si}-${ii}`;
+        let pubName = '';
+        if(item.pubs && item.pubs.length){
+          const selIdx = rec.pubSelect ? rec.pubSelect[priceKey] : null;
+          if(selIdx != null && item.pubs[selIdx] != null) pubName = item.pubs[selIdx];
+        }
+        (item.grades || []).forEach(g=>{
+          const qKey = `${si}-${ii}-${g}-${yearIdx}`;
+          const n = parseInt(rec.qty[qKey], 10);
+          if(!n) return;
+          rows.push([s.tab || s.name || '', item.subject || '', item.name, pubName, g ? `${g}年` : '―', n]);
+        });
+      });
+    });
+  }
+  if(rows.length === 0){
+    showToast('対象データがありません');
+    return;
+  }
+  rows.sort((a,b)=>
+    a[0].localeCompare(b[0], 'ja') || a[1].localeCompare(b[1], 'ja') ||
+    a[2].localeCompare(b[2], 'ja') || a[4].localeCompare(b[4], 'ja')
+  );
+  const header = ['学校名','教科','教材名','採択','学年','数量'];
+  const csv = [header, ...rows].map(r=> r.map(csvEscape).join(',')).join('\r\n');
+  downloadCSV(`教材受注集計_${yearLabel}年度.csv`, csv);
+  showToast('書き出しました');
+}
+document.getElementById('csvExportBtn').addEventListener('click', exportOrderSummaryCSV);
+
 // swipe
 let touchStartX = null, touchStartY = null, touching=false, touchInScrollable=false;
 const viewport = document.getElementById('viewport');
@@ -1998,6 +2080,7 @@ async function init(){
   await loadRecordedKeys();
   const savedYears = await storeGet('yearLabels4');
   if(savedYears && Array.isArray(savedYears) && savedYears.length === 4) YEAR_LABELS = savedYears;
+  updateCsvYearLabel();
   if(PAGES.length === 0){
     renderEmptyState();
     return;
