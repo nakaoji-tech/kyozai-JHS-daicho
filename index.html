@@ -1023,7 +1023,7 @@ body.archive-mode #archiveExportBtn, body.archive-mode #csvExportBtn{display:non
     </div>
     <div id="searchResults"></div>
     <button id="archiveExportBtn" type="button">📦 年度アーカイブを書き出す</button>
-    <button id="csvExportBtn" type="button">📊 <span id="csvYearLabel">R8</span>年度 受注集計をCSV書き出す</button>
+    <button id="csvExportBtn" type="button">📊 <span id="csvYearLabel">R8</span>年度 受注集計・教科メモをExcel書き出す</button>
   </div>
 </div>
 
@@ -1944,20 +1944,13 @@ async function exportArchive(yearName){
   downloadTextFile(`教材受注台帳_中学校_${yearName}_アーカイブ.html`, html);
 }
 
-// ---------------- 受注集計CSV書き出し ----------------
+// ---------------- 受注集計・教科メモ Excel書き出し ----------------
 function updateCsvYearLabel(){
   const el = document.getElementById('csvYearLabel');
   if(el) el.textContent = YEAR_LABELS[3] || 'R8';
 }
 
-function csvEscape(v){
-  const s = String(v==null ? '' : v);
-  if(/[",\r\n]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
-  return s;
-}
-
-function downloadCSV(filename, content){
-  const blob = new Blob(['﻿' + content], {type:'text/csv;charset=utf-8;'});
+function downloadBlob(filename, blob){
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -1968,11 +1961,159 @@ function downloadCSV(filename, content){
   setTimeout(()=> URL.revokeObjectURL(url), 4000);
 }
 
-async function exportOrderSummaryCSV(){
+// ---- 最小限のZIP(無圧縮)生成 ----
+function crc32(bytes){
+  let crc = ~0;
+  for(let i=0; i<bytes.length; i++){
+    crc ^= bytes[i];
+    for(let j=0; j<8; j++){
+      crc = (crc >>> 1) ^ (0xEDB88320 & -(crc & 1));
+    }
+  }
+  return (~crc) >>> 0;
+}
+
+function buildZip(files){
+  const enc = new TextEncoder();
+  const localParts = [];
+  const centralParts = [];
+  let offset = 0;
+  files.forEach(f=>{
+    const nameBytes = enc.encode(f.name);
+    const data = f.data;
+    const crc = crc32(data);
+    const size = data.length;
+
+    const local = new Uint8Array(30 + nameBytes.length);
+    const ldv = new DataView(local.buffer);
+    ldv.setUint32(0, 0x04034b50, true);
+    ldv.setUint16(4, 20, true);
+    ldv.setUint16(6, 0, true);
+    ldv.setUint16(8, 0, true);
+    ldv.setUint16(10, 0, true);
+    ldv.setUint16(12, 0, true);
+    ldv.setUint32(14, crc, true);
+    ldv.setUint32(18, size, true);
+    ldv.setUint32(22, size, true);
+    ldv.setUint16(26, nameBytes.length, true);
+    ldv.setUint16(28, 0, true);
+    local.set(nameBytes, 30);
+    localParts.push(local, data);
+
+    const central = new Uint8Array(46 + nameBytes.length);
+    const cdv = new DataView(central.buffer);
+    cdv.setUint32(0, 0x02014b50, true);
+    cdv.setUint16(4, 20, true);
+    cdv.setUint16(6, 20, true);
+    cdv.setUint16(8, 0, true);
+    cdv.setUint16(10, 0, true);
+    cdv.setUint16(12, 0, true);
+    cdv.setUint16(14, 0, true);
+    cdv.setUint32(16, crc, true);
+    cdv.setUint32(20, size, true);
+    cdv.setUint32(24, size, true);
+    cdv.setUint16(28, nameBytes.length, true);
+    cdv.setUint16(30, 0, true);
+    cdv.setUint16(32, 0, true);
+    cdv.setUint16(34, 0, true);
+    cdv.setUint16(36, 0, true);
+    cdv.setUint32(38, 0, true);
+    cdv.setUint32(42, offset, true);
+    central.set(nameBytes, 46);
+    centralParts.push(central);
+
+    offset += local.length + data.length;
+  });
+  const centralOffset = offset;
+  const centralSize = centralParts.reduce((s,p)=> s + p.length, 0);
+
+  const end = new Uint8Array(22);
+  const edv = new DataView(end.buffer);
+  edv.setUint32(0, 0x06054b50, true);
+  edv.setUint16(4, 0, true);
+  edv.setUint16(6, 0, true);
+  edv.setUint16(8, files.length, true);
+  edv.setUint16(10, files.length, true);
+  edv.setUint32(12, centralSize, true);
+  edv.setUint32(16, centralOffset, true);
+  edv.setUint16(20, 0, true);
+
+  return new Blob([...localParts, ...centralParts, end], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+}
+
+// ---- 最小限のxlsx(Excel)生成 ----
+function colLetter(n){
+  let s = '', num = n + 1;
+  while(num > 0){
+    const m = (num - 1) % 26;
+    s = String.fromCharCode(65 + m) + s;
+    num = Math.floor((num - 1) / 26);
+  }
+  return s;
+}
+
+function xmlEscape(s){
+  return String(s==null ? '' : s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function sanitizeSheetName(name){
+  return String(name).replace(/[:\\/?*\[\]]/g, '').slice(0, 31) || 'Sheet';
+}
+
+function buildSheetXML(rows){
+  let body = '';
+  rows.forEach((row, ri)=>{
+    body += `<row r="${ri+1}">`;
+    row.forEach((cell, ci)=>{
+      const ref = colLetter(ci) + (ri+1);
+      if(cell.type === 'n'){
+        body += `<c r="${ref}"><v>${cell.v}</v></c>`;
+      } else {
+        body += `<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${xmlEscape(cell.v)}</t></is></c>`;
+      }
+    });
+    body += `</row>`;
+  });
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${body}</sheetData></worksheet>`;
+}
+
+function buildWorkbookFiles(sheets){
+  const enc = new TextEncoder();
+  const files = [];
+
+  const contentTypesOverrides = sheets.map((_,i)=>
+    `<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`
+  ).join('');
+  const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>${contentTypesOverrides}</Types>`;
+
+  const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`;
+
+  const sheetEntries = sheets.map((sh,i)=> `<sheet name="${xmlEscape(sh.name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('');
+  const workbookXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${sheetEntries}</sheets></workbook>`;
+
+  const wbRelsEntries = sheets.map((sh,i)=> `<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('');
+  const workbookRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${wbRelsEntries}</Relationships>`;
+
+  files.push({name:'[Content_Types].xml', data: enc.encode(contentTypes)});
+  files.push({name:'_rels/.rels', data: enc.encode(rootRels)});
+  files.push({name:'xl/workbook.xml', data: enc.encode(workbookXml)});
+  files.push({name:'xl/_rels/workbook.xml.rels', data: enc.encode(workbookRels)});
+  sheets.forEach((sh,i)=>{
+    files.push({name:`xl/worksheets/sheet${i+1}.xml`, data: enc.encode(buildSheetXML(sh.rows))});
+  });
+  return files;
+}
+
+function strCell(v){ return {v, type:'s'}; }
+function numCell(v){ return {v, type:'n'}; }
+
+async function exportOrderSummaryWorkbook(){
   showToast('集計を作成しています…');
   const yearIdx = 3;
   const yearLabel = YEAR_LABELS[yearIdx] || 'R8';
-  const rows = [];
+
+  // ---- 受注集計 ----
+  const summaryRows = [];
   for(const s of SCHOOLS){
     const rec = await storeGet(`rec:${s.id}:1`);
     if(!rec || !rec.qty) continue;
@@ -1988,25 +2129,60 @@ async function exportOrderSummaryCSV(){
           const qKey = `${si}-${ii}-${g}-${yearIdx}`;
           const n = parseInt(rec.qty[qKey], 10);
           if(!n) return;
-          rows.push([s.tab || s.name || '', item.subject || '', item.name, pubName, g ? `${g}年` : '―', n]);
+          summaryRows.push([s.tab || s.name || '', item.subject || '', item.name, pubName, g ? `${g}年` : '―', n]);
         });
       });
     });
   }
-  if(rows.length === 0){
-    showToast('対象データがありません');
-    return;
-  }
-  rows.sort((a,b)=>
+  summaryRows.sort((a,b)=>
     a[0].localeCompare(b[0], 'ja') || a[1].localeCompare(b[1], 'ja') ||
     a[2].localeCompare(b[2], 'ja') || a[4].localeCompare(b[4], 'ja')
   );
-  const header = ['学校名','教科','教材名','採択','学年','数量'];
-  const csv = [header, ...rows].map(r=> r.map(csvEscape).join(',')).join('\r\n');
-  downloadCSV(`教材受注集計_${yearLabel}年度.csv`, csv);
+
+  // ---- 教科ごとのメモ(訪問・営業ログ) ----
+  const memoRowsBySubject = {};
+  SUBJECTS.forEach(sub=> memoRowsBySubject[sub] = []);
+  for(const s of SCHOOLS){
+    for(const sub of SUBJECTS){
+      const mem = await storeGet(`memo:${s.id}:${sub}`);
+      if(!mem || !Array.isArray(mem.entries)) continue;
+      mem.entries.forEach(en=>{
+        if(!en.date && !en.teacher && !en.content) return;
+        memoRowsBySubject[sub].push([s.tab || s.name || '', en.date || '', en.teacher || '', en.content || '']);
+      });
+    }
+  }
+
+  const hasSummary = summaryRows.length > 0;
+  const hasAnyMemo = Object.values(memoRowsBySubject).some(r=> r.length > 0);
+  if(!hasSummary && !hasAnyMemo){
+    showToast('対象データがありません');
+    return;
+  }
+
+  const sheets = [];
+  sheets.push({
+    name: sanitizeSheetName(`${yearLabel}年度受注集計`),
+    rows: [
+      ['学校名','教科','教材名','採択','学年','数量'].map(strCell),
+      ...summaryRows.map(r=> [strCell(r[0]), strCell(r[1]), strCell(r[2]), strCell(r[3]), strCell(r[4]), numCell(r[5])])
+    ]
+  });
+  SUBJECTS.forEach(sub=>{
+    sheets.push({
+      name: sanitizeSheetName(`${sub}メモ`),
+      rows: [
+        ['学校名','日付','先生名','内容'].map(strCell),
+        ...memoRowsBySubject[sub].map(r=> r.map(strCell))
+      ]
+    });
+  });
+
+  const blob = buildZip(buildWorkbookFiles(sheets));
+  downloadBlob(`教材受注集計_${yearLabel}年度.xlsx`, blob);
   showToast('書き出しました');
 }
-document.getElementById('csvExportBtn').addEventListener('click', exportOrderSummaryCSV);
+document.getElementById('csvExportBtn').addEventListener('click', exportOrderSummaryWorkbook);
 
 // swipe
 let touchStartX = null, touchStartY = null, touching=false, touchInScrollable=false;
